@@ -1,0 +1,165 @@
+@charset "utf-8";
+
+* {
+	margin:0;
+	padding:0;
+}
+
+h1 {
+	color: #333;
+	font-style: italic;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+body{
+	font: 100% Verdana, Arial, Helvetica, sans-serif;
+	margin: 0 auto;
+	padding: 0px;
+	text-align: center;
+	color: #000000;
+	background-color: #FFF;
+	background-image: url(images/gradient.jpg);
+	background-repeat: repeat-x;
+	margin-top: 0px;
+	top: 0px;
+}
+
+#cloud_back {
+	background-image: url(images/cloudback.png);
+	background-repeat: repeat;
+	background-position: center top;
+	height: 430px;
+	padding-top: 0px;
+	margin: 0 auto;
+	top: 0px;
+}
+
+#animation_box {
+	height: 600px;
+	margin: 0px;
+	padding: 0px;
+	top: 0px;
+	margin: 0 auto;
+}
+
+#snowOverlay {
+	height: 100px;
+	background-image: url(images/snow_blu_overlay.png);
+	background-repeat: repeat-x;    
+}
+
+
+#mainContainer {
+	width: 800px;
+	height: auto;
+	text-align: left;
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	margin-left: auto;
+	overflow: visible;
+}
+
+#seasonDecor {
+	height: 150px;
+	width: 150px;
+	position: relative;
+	top: 5px;
+	z-index: 7;
+	float: left;
+	right: 60px;
+}
+
+#textHF {
+	height: 150px;
+	z-index: 2;
+}
+
+#textB {
+	z-index: 5;
+}
+
+#footButons {
+	position: static;
+	float: left;
+	padding: 50px;
+	top: 20px;
+}
+.winterDecor {
+	background-image: url(images/snowflake.png);
+	background-repeat: no-repeat;
+}
+
+.fallDecor {
+	background-image: url(images/fallLeaf.png);
+	background-repeat: no-repeat;
+}
+
+.summerDecor {
+	background-image: url(images/summersun.png);
+	background-repeat: no-repeat;
+}
+
+.springDecor {
+	background-image: url(images/springFlower.png);
+	background-repeat: no-repeat;
+}
+
+.textHead {
+	height: 150px;
+	background-image: url(images/white_header.png);
+}
+
+.textBody {
+	background-image: url(images/white_body.png);
+	background-repeat: repeat-y;
+	padding-right: 60px;
+	padding-left: 60px;
+}
+
+.textFoot {
+
+}
+	
+
+.snowAnimation{
+	background-repeat:repeat;
+	background-image: url(images/snow_animation.gif);
+}
+
+.snowAnimation2{
+	background-image: url(images/snow_final.gif);
+	background-repeat: repeat;	
+}
+
+
+
+.orangeBack{
+	background-image:url(images/orangeoverlay.png);
+	background-repeat:repeat;
+}
+
+
+.grayBack{
+	background-image:url(images/grayoverlay.png);
+	background-repeat:repeat;
+}
+
+
+.blueBack{
+	background-image:url(images/blueoverlay.png);
+	background-repeat:repeat;
+}
+
+
+.greenBack{
+	background-image:url(images/greenoverlay.png);
+	background-repeat:repeat;
+}
+
+#imageRight{
+	float: right;
+	height: 160px;
+	width: 160px;
+}
