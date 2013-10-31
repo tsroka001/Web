@@ -1,0 +1,152 @@
+#content {
+	position: relative;
+	margin-right: auto;
+	margin-left: auto;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: small;
+
+}
+body {
+	background: #70bf32;
+	background: -webkit-linear-gradient(#99cc66, #cce5b2);
+	background:    -moz-linear-gradient(#99cc66, #cce5b2);
+	background:     -ms-linear-gradient(#99cc66, #cce5b2);
+	background:      -o-linear-gradient(#99cc66, #cce5b2);
+	background:         linear-gradient(#99cc66, #cce5b2);
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+#login {
+  background: white;
+  border: 1px solid #d0d2d5;
+  border-bottom: 1px solid #bebfc2;
+  border-radius: 4px;
+  margin: 0 0 20px 0;
+  padding: 20px;
+  width: 212px;
+  margin-top: 50px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: auto;
+}
+label {
+  color: #404853;
+  display: block;
+  font-weight: bold;
+}
+input {
+  background: #fff;
+  border: 1px solid #c6c9cc;
+  font: 13px/20px 'Droid Sans', Arial, 'Helvetica Neue', 'Lucida Grande', sans-serif;
+
+
+}
+fieldset {
+  background: linear-gradient(top, #ebeced, #dedfe0);
+  border: none;
+  border-top: 1px solid #d0d2d5;
+  border-radius: 0 0 4px 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  margin: 5px 0 -20px -20px;
+  padding: 18px 20px;
+  width: 212px
+}
+fieldset input {
+  margin: 0;
+  width: auto;
+}
+#login_submit {
+  background: blue;
+  border: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.75);
+  color: #fff;
+  font-weight: bold;
+  float: left;
+  padding: 5px 10px;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
+}
+#login_submit:hover {
+  background: darkblue;
+}
+#login_submit:active {
+  background: #333942;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.75), 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+fieldset label {
+  color: #888;
+  cursor: pointer;
+  float: left;
+  font-size: 12px;
+  font-weight: normal;
+  margin: 5px 0 0 20px;
+}
+fieldset label input {
+  margin: -2px 2px 0 0;
+  padding: 0;
+}
+#whitebox {
+	background: white;
+	border: 1px solid #d0d2d5;
+	border-bottom: 1px solid #bebfc2;
+	border-radius: 4px;
+	margin: 0 0 20px 0;
+	padding: 20px;
+	width: 1350px;
+	margin-top: 50px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: auto;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+.caption {
+	position: absolute;
+	top: 32px;
+	background: white;
+	border: 1px solid #d0d2d5;
+	border-bottom: 1px solid #bebfc2;
+	border-radius: 4px;
+	padding-top: 2px;
+	padding-right: 0px;
+	padding-bottom: 2px;
+	padding-left: 5px;
+	width: 200px;
+}
+
+#MapBackground {
+	position:relative;
+	background-image: url(../Images/psd/SummonersRift.png);
+	height: 865px;
+	width: 865px;
+	margin-left:auto;
+	margin-right:auto;
+	background-position: center center;
+}
+
+input[type='range'] {
+	width: 40px;
+}
+
+.slider {
+	position:absolute;
+}
+
+.blue_text {
+	color: #06F;
+}
+
+.red_text {
+	color: #F30;
+}
+
+.sql {
+	font-size: x-small;
+	font-family: "Courier New", Courier, monospace;
+	padding-top: 20px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+}
