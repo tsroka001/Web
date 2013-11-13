@@ -21,9 +21,19 @@ mysql_connect($hostname, $username, $password) OR DIE ("Unable to connect to dat
 mysql_select_db($dbname);
 
 $result = mysql_query("
-SELECT Player.PlayerID
+(SELECT PlayerInfo.PlayerID
 FROM Player
-WHERE Player.GameID = $GameID
+JOIN PlayerInfo ON Player.PlayerId = PlayerInfo.PlayerId
+JOIN Game ON Game.GameID = Player.GameID
+WHERE Game.GameID = $GameID AND Game.TeamAID = Player.TeamID
+ORDER BY Player.Lane)
+UNION ALL
+(SELECT PlayerInfo.PlayerID
+FROM Player
+JOIN PlayerInfo ON Player.PlayerId = PlayerInfo.PlayerId
+JOIN Game ON Game.GameID = Player.GameID
+WHERE Game.GameID = $GameID AND Game.TeamBID = Player.TeamID
+ORDER BY Player.Lane)
 ");
 while ($row = mysql_fetch_array($result)) {
 	$PlayerID[] = $row['PlayerID'];
@@ -53,17 +63,25 @@ while ($row = mysql_fetch_array($result)) {
 }
 //Get current Champions
 $result = mysql_query("
-SELECT Champion.ChampionID,
-PlayerInfo.ScreenName
-FROM Champion
-JOIN Player ON Player.ChampionID = Champion.ChampionID
-JOIN PlayerInfo ON Player.PlayerID = PlayerInfo.PlayerID
-WHERE Player.GameID = $GameID
+(SELECT Champion.ChampionID, PlayerInfo.ScreenName
+FROM Player
+JOIN PlayerInfo ON Player.PlayerId = PlayerInfo.PlayerId
+JOIN Game ON Game.GameID = Player.GameID
+JOIN Champion ON Player.ChampionID = Champion.ChampionID
+WHERE Game.GameID = $GameID AND Game.TeamAID = Player.TeamID
+ORDER BY Player.Lane)
+UNION ALL
+(SELECT Champion.ChampionID, PlayerInfo.ScreenName
+FROM Player
+JOIN PlayerInfo ON Player.PlayerId = PlayerInfo.PlayerId
+JOIN Game ON Game.GameID = Player.GameID
+JOIN Champion ON Player.ChampionID = Champion.ChampionID
+WHERE Game.GameID = $GameID AND Game.TeamBID = Player.TeamID
+ORDER BY Player.Lane)
 ");
 while ($row = mysql_fetch_array($result)) {
 	$PlayerChamp[] = $row['ChampionID'];
 	$PlayerName[] = $row['ScreenName'];
-	$PlayerID[] = $row['PlayerID'];
 }
 
 $max = sizeof($Pick);

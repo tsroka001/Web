@@ -97,7 +97,9 @@ if(!$GameIDPostError){
 	$max = sizeof($ItemID);
 	for($pla = 0; $pla< 10; $pla++){
 	
-		echo "<tr>\n";
+		echo "<tr";
+		if ($pla%2 == 0) echo 'class="alt"';
+		echo ">\n";
 		echo "<td> <img src=\"../ChampIcons/36px-$PlayerChampion[$pla]Square.png\" width=\"20\" height=\"20\" /> $ScreenName[$pla] </td>\n";
 		for ($inum = 0; $inum<6; $inum++){
 			echo "<td><select name=\"PlaInv[]\">\n";

@@ -12,10 +12,17 @@ mysql_connect($hostname, $username, $password) OR DIE ("Unable to connect to dat
 mysql_select_db($dbname);
 
 //fetch names of teams from database
-$result = mysql_query("SELECT TeamID, TeamName FROM Team");
+$result = mysql_query("SELECT TeamID, TeamName FROM Team ORDER BY TeamName ASC");
 while ($row = mysql_fetch_array($result)) {
 	$TeamID[] = $row['TeamID'];
 	$TeamName[] = $row['TeamName'];
+}
+
+//fetch names of tournaments from database
+$result = mysql_query("SELECT TournamentID, TournamentName AS Name FROM Tournament ORDER BY TournamentID ASC");
+while ($row = mysql_fetch_array($result)) {
+	$TourID[] = $row['TournamentID'];
+	$TourName[] = $row['Name'];
 }
 
 //fetch numbner of games entered into database 
@@ -27,66 +34,78 @@ while ($row = mysql_fetch_array($result)) {
 ?>
 
 <body>
-<div id="whitebox">
-  <div class="caption">
-  <strong>Create Game</strong>
-  </div>
-<form method="post" action="AddGameRoster.php">
-<table border="0" cellspacing="0">
-  <tbody>
-    <tr>
-      <td>MatchID (<?php echo (sizeof($GameID)+1);?> ):</td>
-      <td><input type="text" name="GameID" value="<?php echo (sizeof($GameID)+1);?>"/></td>
-    </tr>
-    <tr>
-      <td>Blue Team:</td>
-      <td><select name="BlueTeamID"><br />
-		<?php 
-          $max = sizeof($TeamID);
-          for($val = 0; $val< $max; $val++){
-          echo "<option value=\"".($val+1)."\">$TeamName[$val]</option>\n";
-          }
-        ?>
-        </select></td>
-    </tr>
-    <tr>
-      <td>Red Team: <br /></td>
-      <td><select name="RedTeamID">
-		<?php 
-          $max = sizeof($TeamID);
-          for($val = 0; $val< $max; $val++){
-          echo "<option value=\"".($val+1)."\">$TeamName[$val]</option>\n";
-          }
-        ?>
-        </select></td>
-    </tr>
-    <tr>
-      <td>Game Date:</td>
-      <td><input type="date" name="date" /></td>
-    </tr>
-    <tr>
-      <td>Game Time:</td>
-      <td><input type="time" name="time" /></td>
-    </tr>
-    <tr>
-      <td>Series:</td>
-      <td><input type="number" name="seriesgame" size = "1" value="1"/> of <input type="number" name="serieslength" size = "1" value="1"/></td>
-    </tr>
-    <tr>
-      <td>Season:</td>
-      <td><input type="number" name="season" value="3"/></td>
-    </tr>
-    <tr>
-      <td>Tournament:</td>
-      <td><input type="text" name="tournament" value="LCS NA"/></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td><input type="submit" /></td>
-    </tr>
-  </tbody>
-</table>
-</form>
-</div>
+  <div id="whitebox">
+    <div class="caption">
+      <strong>Create Game</strong>
+    </div>
+    <form method="post" action="AddGameRoster.php">
+    <table border="0" cellspacing="0">
+      <tbody>
+        <tr>
+          <td>MatchID:</td>
+          <td><input type="text" name="GameID" value="<?php echo (sizeof($GameID)+1);?>"/></td>
+        </tr>
+        <tr>
+          <td>Blue Team:</td>
+          <td><select name="BlueTeamID"><br />
+       		<?php 
+              $max = sizeof($TeamID);
+              for($val = 0; $val< $max; $val++){
+              echo "<option value=\"$TeamID[$val]\">$TeamName[$val]</option>\n";
+              }
+          ?>
+            </select></td>
+        </tr>
+        <tr>
+          <td>Red Team: <br /></td>
+          <td><select name="RedTeamID">
+          <?php 
+              $max = sizeof($TeamID);
+              for($val = 0; $val< $max; $val++){
+              echo "<option value=\"$TeamID[$val]\">$TeamName[$val]</option>\n";
+              }
+          ?>
+            </select></td>
+        </tr>
+        <tr>
+          <td>Game Date:</td>
+          <td><input type="date" name="date" /></td>
+        </tr>
+        <tr>
+          <td>Game Time:</td>
+          <td><input type="time" name="time" /></td>
+        </tr>
+        <tr>
+          <td>Series:</td>
+          <td><input type="number" name="seriesgame" size = "1" value="1"/> of <input type="number" name="serieslength" size = "1" value="1"/></td>
+        </tr>
+        <tr>
+          <td>Season:</td>
+          <td><input type="number" name="season" value="3"/></td>
+        </tr>
+        <tr>
+          <td>Tournament:</td>
+          <td><select name="tournament">
+          <?php 
+              $max = sizeof($TourID);
+              for($val = 0; $val< $max; $val++){
+              echo "<option value=\"$TourID[$val]\">$TourName[$val]</option>\n";
+              }
+          ?>
+            </select></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><input type="submit" /></td>
+        </tr>
+      </tbody>
+    </table>
+    </form>
+    <div class="quickEscape">
+      <form method="post" action="AdminPanel.php">
+        <input type="submit" value="Admin Panel" style="width:193px"/>
+      </form>
+    </div>
+  </div>  
 </body>
 </html>

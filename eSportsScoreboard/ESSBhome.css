@@ -12,33 +12,14 @@ body {
 	background-color: #FFF;
 	background-image: url(Images/logo1splash.jpg);
 	background-position: center top;
-	-webkit-font-smoothing: antialiased;
-}
-
-a {
-	text-decoration:none;
-	color: #003;
-}
-
-a:link {
-	color: #003;
 
 }
 
-a:visited {
-	color: #003;
-
-}
-
-a:active {
-	color: #003;
-
-}
-
-a:hover {
-	color: #003;
-
-}
+a {	text-decoration:none;	color: #003;}
+a:link {	color: #003;}
+a:visited {	color: #003;}
+a:active {	color: #003;}
+a:hover {	color: #003;}
 
 #content {
 	position: relative;
@@ -48,89 +29,13 @@ a:hover {
 	color: #FFF;
 }
 
-      
-.tabs input[type=radio] {
-	position: absolute;
-	top: -9999px;
-	left: -9999px;
-}
-.tabs {
-	width: 952px;
-	float: none;
-	list-style: none;
-	position: relative;
-	padding: 0;
-	margin: 20px auto;
-}
-.tabs li{
-	float: left;
-}
-.tabs label {
-	height:50px;
-	display: block;
-	border-radius: 3px 3px 0 0;
-	color: #85bca5;
-	font-size: 20px;
-	font-weight: normal;
-	background: rgba(255,255,255,0.2);
-	cursor: pointer;
-	position: relative;
-	top: 3px;
-	-webkit-transition: all 0.2s ease-in-out;
-	-moz-transition: all 0.2s ease-in-out;
-	-o-transition: all 0.2s ease-in-out;
-	transition: all 0.2s ease-in-out;
-	padding-top: 5px;
-	padding-right: 20px;
-	padding-bottom: 10px;
-	padding-left: 20px;
-}
-.tabs label:hover {
-	background: rgba(255,255,255,0.5);
-	top: 0;
-}
-
-[id^=tab]:checked + label {
-	background: #555;
-	color: white;
-	top: 0;
-}
-
-[id^=tab]:checked ~ [id^=tab-content] {
-	display: block;
-}
-.tab-content{
-	z-index: 2;
-	display: none;
-	text-align: left;
-	width: 100%;
-	font-size: 20px;
-	line-height: 140%;
-	padding-top: 15px;
-	background: #555;
-	color: white;
-	position: absolute;
-	top: 53px;
-	left: 0;
-	box-sizing: border-box;
-	-webkit-animation-duration: 0.5s;
-	-o-animation-duration: 0.5s;
-	-moz-animation-duration: 0.5s;
-	animation-duration: 0.5s;
-	padding-right: 5px;
-	padding-bottom: 15px;
-	padding-left: 5px;
-}
-
-#top {
-	position: relative;	
-}
+#top {	position: relative;	}
 
 #banner {
 	position: relative;
-	height: 70px;
-	
+	height: 70px;	
 }
+
 #topmenu {
 	position: relative;
 	font-size: small;
@@ -142,6 +47,8 @@ a:hover {
 	font-style: normal;
 	font-variant: normal;
 }
+
+/* Top Upcoming Games Box */
 #scoreBoxContainer {
 	position: relative;
 	height: 37px;
@@ -169,33 +76,28 @@ a:hover {
 	font-size: x-small;
 	text-align: center;
 }
+
 .TeamBox {
 	height:24px;
-background: rgb(14,14,14); /* Old browsers */
-background: -moz-linear-gradient(top,  rgb(14,14,14) 0%, rgb(81,81,81) 100%); /* FF3.6+ */
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(14,14,14)), color-stop(100%,rgb(81,81,81))); /* Chrome,Safari4+ */
-background: -webkit-linear-gradient(top,  rgb(14,14,14) 0%,rgb(81,81,81) 100%); /* Chrome10+,Safari5.1+ */
-background: -o-linear-gradient(top,  rgb(14,14,14) 0%,rgb(81,81,81) 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(top,  rgb(14,14,14) 0%,rgb(81,81,81) 100%); /* IE10+ */
-background: linear-gradient(to bottom,  rgb(14,14,14) 0%,rgb(81,81,81) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', endColorstr='#515151',GradientType=0 ); /* IE6-9 */
-
+	background: rgb(14,14,14); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgb(14,14,14) 0%, rgb(81,81,81) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(14,14,14)), color-stop(100%,rgb(81,81,81))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgb(14,14,14) 0%,rgb(81,81,81) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgb(14,14,14) 0%,rgb(81,81,81) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgb(14,14,14) 0%,rgb(81,81,81) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgb(14,14,14) 0%,rgb(81,81,81) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', endColorstr='#515151',GradientType=0 ); /* IE6-9 */
 	color: #FFF;
 	text-align: center;
 }
 
-#RightAdd {
-	position:relative;
-	float:left;
-	height: 600px;
-	width: 160px;
-}
-
+/* Container for top ad*/
 #TopAd {
 	position:relative;
 	margin-right: auto;
 	margin-left: auto;
 	width: 728px;
+	height:90px;
 	padding-right: 116px;
 	padding-left: 116px;
 	padding-top: 15px;
@@ -206,14 +108,25 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', end
 #mid {
 	position: relative;
 	width: auto;
-	background-color: rgba(51,51,51,0.9);
 	top: 10px;
 	padding: 3px;
+}
+
+#mid_content {
+	position:relative;
+	background-color: #333;
+	margin-right: 15px;
+	margin-left: 15px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	padding-top: 5px;
 	box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
 	-moz-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
 	-webkit-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
 }
 
+/*aritcles on Home page*/
 .Article {
 	float: left;
 	position: relative;
@@ -234,23 +147,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', end
 .ArticleText a:active {	color: #FFF;}
 .ArticleText a:hover {	color: #FFF;}
 
-#micro {
-	position: relative;
-	width: 300px;
-	background-color: rgba(51,51,51,0.9);
-	top: 4px;
-	padding: 3px;
-	box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
-	-moz-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
-	-webkit-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
-	float: left;
-	height: 150px;
-	margin-top: 20px;
-	margin-right: 13px;
-	margin-bottom: 6px;
-}
-
-
 #bot {
 	position: relative;
 	clear: both;
@@ -267,145 +163,500 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', end
 	margin-bottom: 10px;
 }
 
-#pickOrder {
-	background-image: url(../Images/pickArrow2.png);
-	background-repeat: repeat-x;
-	height: 111px;
-	border: thin solid #FFF;
-	width: 893px;
-	background-position: center center;
-	background-color: #FFF;
-	position: relative;
-}
+
 #contClear {
 	clear: both;
 	position: relative;
 }
 
-
-.icon {
-	z-index: 2;
-	position: absolute;
-	clear: left;
-}
-
-.images {
-	position:absolute;
-  z-index: 1;
-}
-#TeamsTop {
+/*Match Header Team Image Layouts*/
+.OverviewContent {
 	position: relative;
-	height: 1px;
-	width: 956px;
-	z-index: 3;
-	top: -55px;
-	margin-left: 305px;
+	width:400px;
+	margin-left:28px;
+	margin-right:28px;
+	float:left;
+	background-color: #222;
+	box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	margin-bottom: 10px;
 }
-#TeamTopPic {
+
+.OverviewPicBox {
 	position: relative;
-	height: 250px;
-	width: 956px;
-}
-#BlueTeam {
-	position: absolute;
-	font-size: 30px;
-	font-weight: bold;
-	color: #06F;
-	text-transform: none;
-	width: 300px;
-	background: -moz-linear-gradient(left,  rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0.65)), color-stop(100%,rgba(0,0,0,0))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(left,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(left,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(left,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* IE10+ */
-	background: linear-gradient(to right,  rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* W3C */
-
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=1 ); /* IE6-9 */
-	height: 75px;
-	text-align: center;
-	vertical-align: middle;
 }
 
-
-#RedTeam {
-	position: absolute;
-	right: 5px;
-	font-size: 30px;
-	font-weight: bold;
-	color: #F33;
-	width: 300px;
-	text-align: right;
-	background: -moz-linear-gradient(left,  rgba(0,0,0,0) 0%, rgba(0,0,0,0.65) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%); /* IE10+ */
-	background: linear-gradient(to right,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%); /* W3C */
-
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#a6000000',GradientType=1 ); /* IE6-9 */
-	height: 75px;
-	text-align: center;
-	display: table-cell;
-	vertical-align: middle;
-
+.OverviewNameBG {
+	position: relative;
 }
 
-.PicksTable{
+.OverviewNameBox {
+	position: relative;
+	width:460px;
+	font-size:24px;
+	text-align:center;
+	color:#333;
+	top:-10px;
+	left:-15px;
+	font-weight: bolder;
+}
+
+.ONBa {
+	position:relative;
+		height:50px;
+	background-image: url(Images/psd/images/green_under_01.png);
+	width: 33px;
 	float: left;
-	position: relative;
-	text-align: center;
+	z-index: 4;
 }
 
-.ImgBox{
+.ONBb {
+	position:relative;
+	height:38px;
+	background-image: url(Images/psd/images/green_under_02.png);
+	width: 365px;
 	float: left;
-	height: 260px;
-	width: 260px;
-	position: relative;
+	background-repeat: repeat-x;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	z-index: 4;
 }
 
-.PlaContBox{
+.ONBc {
+	position:relative;
+	height:50px;
+	background-image: url(Images/psd/images/green_under_03.png);
+	width: 33px;
 	float: left;
+	z-index: 4;
+}
+
+.OvreviewStatsBox {
+	position: relative;
+	height:132px;
+	top:-15px;
+	padding-left:10px;
+	padding-right:10px;
+}
+
+.OSBStat {
+	position:relative;
+	width:95px;
+	float:left;
+}
+
+.OSBStatNum {
+	position:relative;
+	width:95px;
+	font-size: 38px;
+	text-align:center;
+}
+
+.OSBStatSub {
+	position:relative;
+	width:95px;
+	font-size: x-small;
+	text-align:center;
+	top:-8px;
+}
+
+.OSBaddon {
+	position:relative;
+	width:190px;
+	float:left;
+	text-align:center;
+	font-size:small;
+}
 	
+.Blue {
+	color: #06F;
 }
 
 
-.datagrid table { 
-	border-collapse: collapse; 
-	text-align: left; 
+.Red {
+	color: #F33;
+}
+
+.VS {
+	position: absolute;
+	top: 312px;
+	right: 415px;
+	z-index: 6;
+}
+
+.OverviewPlayer {
+	position:relative;
+	float:left;
+	height:160px;
+	width:80px;
+}
+
+/* Overview Section Styles*/
+.TeamInfo {
+	position:relative;
+	height:120px;
+	width:240px;
+	padding:5px;
+}
+
+.TourneyLogo {
+	position:Absolute;
+	top:10px;
+	left:262px;
+}
+
+.GameOutcome {
+	position:relative;
+	height:20px;
+	width:120px;
+	font-weight: bold;
+	text-align: center;
+	background-color: rgba(0,0,0,0.2);
+	margin-top: 10px;
+}
+
+.TeamLogo {
+	position:relative;
+	height:120px;
+	width:120px;
+	float:left;
+}
+
+.TeamWL {
+	position:relative;
+	height:120px;
+	width:120px;
+	float:left;
+}
+
+.TeamCall{
+	position:relative;
+	height:60px;
+	font-size: 46px;
+	font-weight: bolder;
+	text-align: center;
+}
+
+.WL{
+	position:relative;
+	height:20px;
+	font-size: 12px;
+	text-align: center;
+	background-color: rgba(0,0,0,0.2);
+}
+
+.TeamStats {
+	position:relative;
+}
+
+/* Pick Order Icons*/
+
+#Picks {
+	position:relative;
+	background-color:#222;
+	height:370px;
+	width:856px;
+	padding-left:2px;
+	padding-right:2px;
+	margin-top: 5px;
+	margin-right: 28px;
+	margin-bottom: 12px;
+	margin-left: 28px;
+	box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+}
+
+#POBox {
+	position:relative;
+}
+
+#POTeams {
+	position:relative;
+	height:130px;
+	width:36px;
+	float:left;
+	padding:10px;
+	margin-top:10px;
+}
+
+#POTeamsBlank {
+	position:relative;
+	height:30px;
+	float:left;
+}
+
+.POTeamBox {
+	position:relative;
+	height:49px;
+}
+
+.POTeamText {
+	position:relative;
+	margin: 0 auto;
+	top:31px;
+}
+
+#POBans {
+	position:relative;
+	float:left;
+	height:130px;
+	width:294px;
+	padding-right:2px;
+	padding-left:3px;
+	margin-top:10px;
+}
+
+#POBanTag {
+	position:relative;
+	height:30px;
+}
+
+#POBanTable {
+	position:relative;
+	background-color:rgba(255,51,51, 0.1);
+	height:98px;
+}
+
+#POPicks {
+	position:relative;
+	float:left;
+	height:130px;
+	width:490px;
+	padding-right:2px;
+	padding-left:3px;
+	margin-top:10px;
+}
+
+#POPickTag {
+	position:relative;
+	height:30px;
+}
+
+#POPickTable {
+	position:relative;
+	background-color:rgba(101,255,0, 0.1);
+	height:98px;
+}
+
+.POIcon {
+	position:relative;
+	height:49px;
+	width:49px;
+	float:left;
+	background-size: contain;
+}
+
+.PickLabel {
+	position:relative;
+	color:#222;
+}
+
+.PLa {
+	position:relative;
+	float:left;
+	background-image: url(Images/images/whiteUnderlay_01.png);
+	height: 30px;
+	width: 24px;
+	background-size: contain;
+}
+
+.PLb {
+	position:relative;
+	float:left;
+	background-image: url(Images/images/whiteUnderlay_02.png);
+	height: 25px;
+	padding-top:5px;
+	background-size: contain;
+	background-repeat: repeat-x;
+	font-weight: bolder;
+}
+
+.PLc {
+	position:relative;
+	float:left;
+	background-image: url(Images/images/whiteUnderlay_03.png);
+	height: 30px;
+	width: 24px;
+	background-size: contain;
+}
+
+/* Common Picks Section under Picks and Bans */
+
+#CommonContainer {
+	position:relative;
+	width:912px;
+}
+
+#ComLabel {
+	position:relative;
+	padding-left:55px;
+}
+
+.ComTeam {
+	position:relative;
+	width:421px;
+	padding-left:10px;
+	padding-top:5px;
+	padding-right:10px;
+	float:left;
+}
+
+.ComTeamID {
+	position:relative;
+	width:32px;
+	height:33px;
+	float:left;
+}
+
+.ComPlayer {
+	position:relative;
+	width:202px;
+	float:left;
+	border-top-width: thin;
+	border-right-width: thin;
+	border-bottom-width: thin;
+	border-left-width: thin;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: solid;
+	border-left-style: none;
+	border-top-color: #333;
+	border-right-color: #333;
+	border-bottom-color: #333;
+	border-left-color: #333;
+	vertical-align: middle;
+	display: table-cell;
+}
+
+.ComChampPool {
+	position:relative;
+	width:177px;
+	padding-bottom:2px;
+	float:left;
+}
+
+.ComChamp {
+	position:relative;
+	width:49px;
+	height:29px;
+	margin-left:5px;
+	margin-right:2px;
+	overflow:hidden;
+	float:left;
+}
+
+.ComChampText {
+	position:absolute;
+	font-size: xx-small;
+	color: #FFF;
+	background-color: #111;
+	right:1px;
+	bottom:1px;
+	padding-left:1px;
+	padding-right:1px;
+	overflow:visible;
+}
+
+.ComChamp img {
+	position:relative;
+	height:49px;
+	width:49px;
+	margin-top:-10px;
+}
+
+/* VOD CSS */
+
+#VOD {
+	position:relative;
+	background-color:#222;
+	height:500px;
+	width:856px;
+	padding-left:2px;
+	padding-right:2px;
+	margin-top: 5px;
+	margin-right: 28px;
+	margin-bottom: 12px;
+	margin-left: 28px;
+	box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+}
+
+
+/*Stats Table CSS */
+.TableContent {
+	position:relative;
+	background-color:#222;
+	height:320px;
+	width:856px;
+	padding-left:2px;
+	padding-right:2px;
+	padding-top:5px;
+	margin-top: 5px;
+	margin-right: 28px;
+	margin-bottom: 12px;
+	margin-left: 28px;
+	box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.5);
+}
+
+.TableTeamCall {
+	position:relative;
+	width:36px;
+	height:118px;
+	text-align:center;
+	font-size:24px;
+	margin:10px;
+}
+
+.TableTeamCallText {
+	position:relative;
+	margin: 0 auto;
+	top:60px;
+	font-weight: bolder;
+}
+
+.datagrid table {
+	border-collapse: collapse;
+	text-align: left;
+	background-color: #181818;
 } 
 .datagrid {
-	background: #fff;
 	overflow: hidden;
-	float:left;
 	margin-bottom: 5px;
+	width:794px;
+	float: left;
 }
 .datagrid a {
-	color:#00557F !important;
+	color:#e8e8e8 !important;
 }
 
 .datagrid table td, .datagrid table th { 
 	padding: 1px 1px; 
 }
 .datagrid table thead th {
-	background-color:#333;
-	color:#FFFFFF;
+	background-color:#222;
+	color:#CCC;
 	font-size: 10px;
 	font-weight: bold;
-	border-left: 1px solid #444;
+	border-left: 1px solid #1f1f1f;
 } 
 
 .datagrid table thead th:first-child { 
 	border: none; 
 }
 .datagrid table tbody td { 
-	color: #00557F; 
-	border-left: 1px solid #E1EEF4;
+	color: #e8e8e8; 
+	border-left: 1px solid #1e1e1e;
 	font-size: 12px;
 	font-weight: normal; 
 }
 .datagrid table tbody .alt td { 
-	background: #CCCCCC; 
-	color: #00557F; 
+	background: #222; 
+	color: #FFF; 
 }
 .datagrid table tbody td:first-child { 
 	border-left: none; 
@@ -419,61 +670,131 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', end
 	font-size: 12px 
 } 
 
-
-
-
-
-
-
-
-.meter-wrap, .meter-value{
-	width:15px;
-	height:2px;
-	position: absolute;
-}
-.meter-wrap{
-	background-color:#FFF;
-	border: 1px solid #000;
-}
-.health {
-	background-color: #3C0;
-}
-#minimap {
-	background-image: url(../Images/psd/SummonersRift.jpg);
-	height: 856px;
-	width: 856px;
+/* Capthcha & Comments Content */
+#comments {
 	position: relative;
-	border: thin solid #333;
+	width: auto;
+	background-color: rgba(51,51,51,0.9);
+	top: 10px;
+	box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
+	-moz-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
+	-webkit-box-shadow: 0px 6px 18px 2px rgba(0, 0, 0, 0.88);
+	padding-top: 9px;
+	padding-right: 25px;
+	padding-bottom: 9px;
+	padding-left: 25px;
 }
-.RTicon {
-	background-image: url(../Images/redtower.png);
-	height: 17px;
-	width: 11px;
-	position: absolute;
-	bottom: 3px;
-	left: 2px;
+
+#cptcha {
+	position:relative;
+	height:128px;
+	width:330px;
+	float:left;
 }
-.BTicon {
-	background-image: url(../Images/bluetower.png);
-	height: 17px;
-	width: 11px;
-	position: absolute;
-	bottom: 3px;
-	left: 2px;
+
+#capBox{
+	position:relative;
 }
-.RIicon {
-	background-image: url(../Images/redinhib.png);
-	height: 12px;
-	width: 12px;
-	position: absolute;
-	bottom: 3px;
-	left: 2px;
+
+#comfield {
+	position:relative;
+	height:128px;
+	width:100%;
 }
-.BIicon {
-	background-image: url(../Images/blueinhib.png);
-	height: 12px;
-	width: 12px;
-	position: absolute;
-	bottom: 3px;
-	left: 2px;
+
+#userField {
+	position:relative;
+	float: right;
+	padding-top: 15px;
+}
+
+#submitField {
+	position:relative;
+	float: right;
+	padding-top: 15px;
+}
+
+#commentField {
+	position:relative;
+	float: right;
+}
+
+#comlist {
+	position:relative;
+	font-size: small;
+	padding-top: 5px;
+	padding-right: 20px;
+	padding-bottom: 5px;
+	padding-left: 20px;
+	border-top-width: thin;
+	border-right-width: thin;
+	border-bottom-width: thin;
+	border-left-width: thin;
+	border-top-style: solid;
+	border-right-style: none;
+	border-bottom-style: solid;
+	border-left-style: none;
+	border-top-color: #FFF;
+	border-right-color: #FFF;
+	border-bottom-color: #FFF;
+	border-left-color: #FFF;
+	margin-bottom: 10px;
+	background-color: rgba(51,51,51,0.5);
+}
+
+
+/* Green Section Lables */ 
+.yel_head {
+	position:relative;
+	height:50px;
+	width:964px;
+	left:-20px;
+	color: #333;
+	font-size: x-large;
+	font-weight: bold;
+	z-index: 4;
+}
+
+.yel_a {
+	position:relative;
+	height:50px;
+	background-image: url(Images/psd/images/green_under_01.png);
+	width: 33px;
+	float: left;
+	z-index: 4;
+}
+
+.yel_b {
+	position:relative;
+	height:38px;
+	background-image: url(Images/psd/images/green_under_02.png);
+	width: 884px;
+	float: left;
+	background-repeat: repeat-x;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	z-index: 4;
+}
+
+.yel_c {
+	position:relative;
+	height:50px;
+	background-image: url(Images/psd/images/green_under_03.png);
+	width: 33px;
+	float: left;
+	z-index: 4;
+}
+
+.FloatRight {	float:right;}
+
+.FloatLeft {	float:left;}
+
+.rotate {
+  -moz-transform: rotate(-90.0deg);  /* FF3.5+ */
+  -o-transform: rotate(-90.0deg);  /* Opera 10.5 */
+  -webkit-transform: rotate(-90.0deg);  /* Saf3.1+, Chrome */
+  filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083);  /* IE6,IE7 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)"; /* IE8 */
+	-ms-transform: rotate(-90deg);	/* IE */
+	-o-transform: rotate(-90deg);/* Opera */
 }

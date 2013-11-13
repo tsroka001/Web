@@ -38,11 +38,29 @@ else $senderror=1;
 if (isset($_POST['GameID'])) $GameID = $_POST['GameID'];
 else $senderror=1;
 
+//determiner teams players are on to entere into inserts
+$result = mysql_query("
+SELECT TeamAID, TeamBID
+FROM Game
+WHERE GameID = $GameID
+	");
+while ($row = mysql_fetch_array($result)) {
+	$BlueTeamID[] = $row['TeamAID'];
+	$RedTeamID[] = $row['TeamBID'];
+}
+	
 //create player entires
 for($player = 0; $player <10; $player++){
   $playerPos = ($player % 5);
-  $myInsQuery = "INSERT INTO `LoLStatsTest2`.`Player` (`GameID`, `PlayerID`, `ChampionID`, `Kills`, `Deaths`, `Assists`, `Level`, `CreepScore`, `Gold`, `Towers`, `Lane`) VALUES ($GameID, $playerList[$player], 0, 0, 0, 0, 1, 0, '*', 0, '$positionArray[$playerPos]');";
-  $iq1[$player] = $myInsQuery;
+	if ($player < 5){
+  	$myInsQuery = "INSERT INTO `LoLStatsTest2`.`Player` (`GameID`, `PlayerID`, `ChampionID`, `Kills`, `Deaths`, `Assists`, `Level`, `CreepScore`, `Gold`, `Towers`, `Lane`, `TeamID`) VALUES ($GameID, $playerList[$player], 0, 0, 0, 0, 1, 0, '*', 0, '$positionArray[$playerPos]', $BlueTeamID[0]);";
+	}
+	else{
+  	$myInsQuery = "INSERT INTO `LoLStatsTest2`.`Player` (`GameID`, `PlayerID`, `ChampionID`, `Kills`, `Deaths`, `Assists`, `Level`, `CreepScore`, `Gold`, `Towers`, `Lane`, `TeamID`) VALUES ($GameID, $playerList[$player], 0, 0, 0, 0, 1, 0, '*', 0, '$positionArray[$playerPos]', $RedTeamID[0]);";	
+	}
+	
+	
+	$iq1[$player] = $myInsQuery;
 	$result = mysql_query($myInsQuery);
 }
 

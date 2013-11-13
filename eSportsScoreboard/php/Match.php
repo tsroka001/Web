@@ -3,15 +3,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../ESSBhome.css" rel="stylesheet" type="text/css" media="screen" />
 
-  <link rel="stylesheet" href="../jquery-ui-1.10.3.custom/css/bgthm/jquery-ui-1.10.3.custom.css" />
-  <script src="../jquery-ui-1.10.3.custom/js/jquery-1.9.1.js"></script>
-  <script src="../jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.js"></script>
-  <script>
-  $(function() {
-    $( "#tabs" ).tabs();
-  });
-  </script>
-
 	<script type="text/javascript">var p="http",d="static";if(document.location.protocol=="https:"){p+="s";d="engine";}var z=document.createElement("script");z.type="text/javascript";z.async=true;z.src=p+"://"+d+".adzerk.net/ados.js";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(z,s);</script>
   <script type="text/javascript">
   var ados = ados || {};
@@ -30,6 +21,43 @@ require_once 'login.php';
 mysql_connect($hostname, $username, $password) OR DIE ("Unable to connect to database! Please try again later.");
 mysql_select_db($dbname);
 
+require_once('recaptchalib.php');
+	
+// Get a key from https://www.google.com/recaptcha/admin/create
+$publickey = "6LfQvOkSAAAAAGNnW3-JU51DI85wye43G1QkG2DO";
+$privatekey = "6LfQvOkSAAAAABQEXSo46cNuA-cJT0zk7X3IZ4pC";
+
+# the response from reCAPTCHA
+$resp = null;
+# the error code from reCAPTCHA, if any
+$error = null;
+
+# was there a reCAPTCHA response?
+if ($_POST["recaptcha_response_field"]) {
+	$resp = recaptcha_check_answer ($privatekey,
+																	$_SERVER["REMOTE_ADDR"],
+																	$_POST["recaptcha_challenge_field"],
+																	$_POST["recaptcha_response_field"]);
+
+	if ($resp->is_valid) {
+		//Code to execute when successful captcha
+		
+		if (isset($_POST['user'])) $user = mysql_real_escape_string($_POST['user']);
+		else $senderror=1;
+		if (isset($_POST['comment'])) $comment = mysql_real_escape_string($_POST['comment']);
+		else $senderror=1;
+		
+		mysql_query("INSERT INTO `LoLStatsTest2`.`GComments` (`GameID`, `User`, `Comment`, `Time`, `Date`) VALUES ('1', '". $user ."', '". $comment ."', CURTIME(), CURDATE());"); 
+		
+		
+	}
+	else {
+		# set the error code so that we can display it
+		$error = $resp->error;
+	}
+}
+
+
 $get = htmlspecialchars($_GET["GameID"]);	  
 if (!empty($get)){
 	$GameID = $get;
@@ -43,75 +71,186 @@ date_default_timezone_set('EST');
 //SQL
 //SELECTS
 
+//Blue Team Stats
 $result = mysql_query("
-  SELECT PlayerInfo.PlayerID, 
-  PlayerInfo.ScreenName,  
-  Champion.ChampionName, 
-  Champion.JointChampionName,
-  Player.SummonerA,
-  Player.SummonerB,
-  Player.Level,
-  Player.Kills, 
-  Player.Deaths, 
-  Player.Assists,
-  Player.CreepScore,
-  Player.Gold,
-  Player.Towers,
-  Player.Lane,
-  PlayerInfo.TeamID,
-  Team.TeamName,
-  Team.TeamNameJoint,
-  Team.TeamCall
-  FROM PlayerInfo 
-  JOIN Player ON Player.PlayerID = PlayerInfo.PlayerID
-  JOIN Champion ON Champion.ChampionID = Player.ChampionID
-  JOIN Team ON PlayerInfo.TeamID = Team.TeamID
-  WHERE Player.GameID = $GameID
-  ORDER BY PlayerInfo.TeamID ASC, Player.Lane ASC;
+	SELECT PlayerInfo.PlayerID, 
+	PlayerInfo.ScreenName, 
+	PlayerInfo.PlayerName,
+	PlayerInfo.JointPlayerName,  
+	Champion.ChampionName, 
+	Champion.JointChampionName,
+	Player.SummonerA,
+	Player.SummonerB,
+	Player.Level,
+	Player.Kills, 
+	Player.Deaths, 
+	Player.Assists,
+	Player.CreepScore,
+	Player.Gold,
+	Team.TeamName,
+	Team.TeamNameJoint,
+	Team.TeamCall,
+	I1.ItemName AS Item1S,
+	I1.JointItemName AS Item1L,
+	I2.ItemName AS Item2S,
+	I2.JointItemName AS Item2L,
+	I3.ItemName AS Item3S,
+	I3.JointItemName AS Item3L,
+	I4.ItemName AS Item4S,
+	I4.JointItemName AS Item4L,
+	I5.ItemName AS Item5S,
+	I5.JointItemName AS Item5L,
+	I6.ItemName AS Item6S,
+	I6.JointItemName AS Item6L
+	FROM Player
+	JOIN PlayerInfo ON Player.PlayerId = PlayerInfo.PlayerId
+	JOIN Game ON Game.GameID = Player.GameID
+	JOIN Champion ON Champion.ChampionID = Player.ChampionID
+	JOIN Team ON Player.TeamID = Team.TeamID
+	JOIN GPItems AS GI1 ON GI1.PlayerID = Player.PlayerID AND GI1.GameID = Player.GameID AND GI1.ItemSlot = 1
+	JOIN Item AS I1 ON GI1.ItemID = I1.ItemID
+	JOIN GPItems AS GI2 ON GI2.PlayerID = Player.PlayerID AND GI2.GameID = Player.GameID AND GI2.ItemSlot = 2
+	JOIN Item AS I2 ON GI2.ItemID = I2.ItemID
+	JOIN GPItems AS GI3 ON GI3.PlayerID = Player.PlayerID AND GI3.GameID = Player.GameID AND GI3.ItemSlot = 3
+	JOIN Item AS I3 ON GI3.ItemID = I3.ItemID
+	JOIN GPItems AS GI4 ON GI4.PlayerID = Player.PlayerID AND GI4.GameID = Player.GameID AND GI4.ItemSlot = 4
+	JOIN Item AS I4 ON GI4.ItemID = I4.ItemID
+	JOIN GPItems AS GI5 ON GI5.PlayerID = Player.PlayerID AND GI5.GameID = Player.GameID AND GI5.ItemSlot = 5
+	JOIN Item AS I5 ON GI5.ItemID = I5.ItemID
+	JOIN GPItems AS GI6 ON GI6.PlayerID = Player.PlayerID AND GI6.GameID = Player.GameID AND GI6.ItemSlot = 6
+	JOIN Item AS I6 ON GI6.ItemID = I6.ItemID
+	WHERE Game.GameID = $GameID AND Game.TeamAID = Player.TeamID
+	ORDER BY Player.Lane ASC
 ");
 while ($row = mysql_fetch_array($result)) {
-  $PlayerID[] = $row['PlayerID'];///////////////////////////////   PlayerID    
-  $ScreenName[] = $row['ScreenName'];///////////////////////////   ScreenName
-  $ChampionName[] = $row['ChampionName'];///////////////////////   ChampionName
-  $JointChampionName[] = $row['JointChampionName'];/////////////   JointChampionName
-  $SummonerA[] = $row['SummonerA'];/////////////////////////////   SummonerA
-  $SummonerB[] = $row['SummonerB'];/////////////////////////////   SummonerB
-  $Level[] = $row['Level'];/////////////////////////////////////   Level
-  $Kills[] = $row['Kills'];/////////////////////////////////////   Kills
-  $Deaths[] = $row['Deaths'];///////////////////////////////////   Deaths
-  $Assists[] = $row['Assists'];/////////////////////////////////   Assists
-  $CreepScore[] = $row['CreepScore'];///////////////////////////   CreepScore
-  $Gold[] = $row['Gold'];///////////////////////////////////////   Gold
-  $Towers[] = $row['Towers'];///////////////////////////////////   Towers
-  $PlayerLane[] = $row['Lane'];/////////////////////////////////   Lane
-  $TeamName[] = $row['TeamName'];///////////////////////////////   TeamName
-  $TeamJointName[] = $row['TeamJointName'];/////////////////////   TeamJoinName
-  $TeamCall[] = $row['TeamCall'];///////////////////////////////   TeamCall
+  $b_PlayerID[] = $row['PlayerID'];  
+  $b_ScreenName[] = $row['ScreenName'];
+	$b_PlayerName[] = $row['PlayerName'];
+	$b_JointPlayerName[] = $row['JointPlayerName'];
+  $b_ChampionName[] = $row['ChampionName'];
+  $b_JointChampionName[] = $row['JointChampionName'];
+  $b_SummonerA[] = $row['SummonerA'];
+  $b_SummonerB[] = $row['SummonerB'];
+  $b_Level[] = $row['Level'];
+  $b_Kills[] = $row['Kills'];
+  $b_Deaths[] = $row['Deaths'];
+  $b_Assists[] = $row['Assists'];
+  $b_CreepScore[] = $row['CreepScore'];
+  $b_Gold[] = $row['Gold'];
+  $b_TeamName[] = $row['TeamName'];
+  $b_TeamJointName[] = $row['TeamJointName'];
+  $b_TeamCall[] = $row['TeamCall'];
+	$b_Item1S[] = $row['Item1S'];
+	$b_Item1L[] = $row['Item1L'];
+	$b_Item2S[] = $row['Item2S'];
+	$b_Item2L[] = $row['Item2L'];
+	$b_Item3S[] = $row['Item3S'];
+	$b_Item3L[] = $row['Item3L'];
+	$b_Item4S[] = $row['Item4S'];
+	$b_Item4L[] = $row['Item4L'];
+	$b_Item5S[] = $row['Item5S'];
+	$b_Item5L[] = $row['Item5L'];
+	$b_Item6S[] = $row['Item6S'];
+	$b_Item6L[] = $row['Item6L'];
 }
 
-//Current Items Info
+//Red Team Stats
 $result = mysql_query("
-  SELECT Item.JointItemName
-  FROM Item
-  JOIN GPItems
-  WHERE Item.ItemID = GPItems.ItemID AND GPItems.GameID = $GameID");
+	SELECT PlayerInfo.PlayerID, 
+	PlayerInfo.ScreenName, 
+	PlayerInfo.PlayerName,
+	PlayerInfo.JointPlayerName,  
+	Champion.ChampionName, 
+	Champion.JointChampionName,
+	Player.SummonerA,
+	Player.SummonerB,
+	Player.Level,
+	Player.Kills, 
+	Player.Deaths, 
+	Player.Assists,
+	Player.CreepScore,
+	Player.Gold,
+	Team.TeamName,
+	Team.TeamNameJoint,
+	Team.TeamCall,
+	I1.ItemName AS Item1S,
+	I1.JointItemName AS Item1L,
+	I2.ItemName AS Item2S,
+	I2.JointItemName AS Item2L,
+	I3.ItemName AS Item3S,
+	I3.JointItemName AS Item3L,
+	I4.ItemName AS Item4S,
+	I4.JointItemName AS Item4L,
+	I5.ItemName AS Item5S,
+	I5.JointItemName AS Item5L,
+	I6.ItemName AS Item6S,
+	I6.JointItemName AS Item6L
+	FROM Player
+	JOIN PlayerInfo ON Player.PlayerId = PlayerInfo.PlayerId
+	JOIN Game ON Game.GameID = Player.GameID
+	JOIN Champion ON Champion.ChampionID = Player.ChampionID
+	JOIN Team ON Player.TeamID = Team.TeamID
+	JOIN GPItems AS GI1 ON GI1.PlayerID = Player.PlayerID AND GI1.GameID = Player.GameID AND GI1.ItemSlot = 1
+	JOIN Item AS I1 ON GI1.ItemID = I1.ItemID
+	JOIN GPItems AS GI2 ON GI2.PlayerID = Player.PlayerID AND GI2.GameID = Player.GameID AND GI2.ItemSlot = 2
+	JOIN Item AS I2 ON GI2.ItemID = I2.ItemID
+	JOIN GPItems AS GI3 ON GI3.PlayerID = Player.PlayerID AND GI3.GameID = Player.GameID AND GI3.ItemSlot = 3
+	JOIN Item AS I3 ON GI3.ItemID = I3.ItemID
+	JOIN GPItems AS GI4 ON GI4.PlayerID = Player.PlayerID AND GI4.GameID = Player.GameID AND GI4.ItemSlot = 4
+	JOIN Item AS I4 ON GI4.ItemID = I4.ItemID
+	JOIN GPItems AS GI5 ON GI5.PlayerID = Player.PlayerID AND GI5.GameID = Player.GameID AND GI5.ItemSlot = 5
+	JOIN Item AS I5 ON GI5.ItemID = I5.ItemID
+	JOIN GPItems AS GI6 ON GI6.PlayerID = Player.PlayerID AND GI6.GameID = Player.GameID AND GI6.ItemSlot = 6
+	JOIN Item AS I6 ON GI6.ItemID = I6.ItemID
+	WHERE Game.GameID = $GameID AND Game.TeamBID = Player.TeamID
+	ORDER BY Player.Lane ASC
+");
 while ($row = mysql_fetch_array($result)) {
-  $Item[] = $row['JointItemName'];
+  $r_PlayerID[] = $row['PlayerID'];  
+  $r_ScreenName[] = $row['ScreenName'];
+	$r_PlayerName[] = $row['PlayerName'];
+	$r_JointPlayerName[] = $row['JointPlayerName'];
+  $r_ChampionName[] = $row['ChampionName'];
+  $r_JointChampionName[] = $row['JointChampionName'];
+  $r_SummonerA[] = $row['SummonerA'];
+  $r_SummonerB[] = $row['SummonerB'];
+  $r_Level[] = $row['Level'];
+  $r_Kills[] = $row['Kills'];
+  $r_Deaths[] = $row['Deaths'];
+  $r_Assists[] = $row['Assists'];
+  $r_CreepScore[] = $row['CreepScore'];
+  $r_Gold[] = $row['Gold'];
+  $r_TeamName[] = $row['TeamName'];
+  $r_TeamJointName[] = $row['TeamJointName'];
+  $r_TeamCall[] = $row['TeamCall'];
+	$r_Item1S[] = $row['Item1S'];
+	$r_Item1L[] = $row['Item1L'];
+	$r_Item2S[] = $row['Item2S'];
+	$r_Item2L[] = $row['Item2L'];
+	$r_Item3S[] = $row['Item3S'];
+	$r_Item3L[] = $row['Item3L'];
+	$r_Item4S[] = $row['Item4S'];
+	$r_Item4L[] = $row['Item4L'];
+	$r_Item5S[] = $row['Item5S'];
+	$r_Item5L[] = $row['Item5L'];
+	$r_Item6S[] = $row['Item6S'];
+	$r_Item6L[] = $row['Item6L'];
 }
 
 //Current Game Information
 $result = mysql_query("
-	SELECT TeamAID,
-	TeamBID,
-	GameState,
-	GameDate,
-	GameTime,
-	Season,
-	Tournament,
-	Winner,
-	GameLength
+	SELECT Game.TeamAID,
+	Game.TeamBID,
+	Game.GameState,
+	Game.GameDate,
+	Game.GameTime,
+	Game.Season,
+	Game.Tournament,
+	Game.Winner,
+	Game.GameLength,
+	Game.VODLink
 	FROM Game
-	WHERE GameID = $GameID;");
+	WHERE Game.GameID = $GameID");
 while ($row = mysql_fetch_array($result)) {
 	$BlueTeamID[] = $row['TeamAID'];
 	$RedTeamID[] = $row['TeamBID'];
@@ -122,6 +261,17 @@ while ($row = mysql_fetch_array($result)) {
 	$Tournament[] = $row['Tournament'];
   $Winner[] = $row['Winner'];
 	$GameLength[] = $row['GameLength'];
+	$VOD[] = $row['VODLink'];
+
+}
+
+$result = mysql_query("
+	SELECT TeamID, Time
+	FROM Objectives
+	WHERE GameID = $GameID AND Type='First Blood'");
+while ($row = mysql_fetch_array($result)) {
+	$FBTeam[] = $row['TeamID'];
+	$FBTime[] = $row['Time'];
 }
 
 // Query upcoming games data
@@ -141,20 +291,106 @@ while ($row = mysql_fetch_array($result)) {
 	$upcGameTime[] = $row['GameTime'];
 }
 
-//Get Tower HP
+//Query Objectives Stats
 $result = mysql_query("
-	SELECT TowerHealth 
-	FROM TowerHealth 
-	WHERE GameID = $GameID
+(
+SELECT (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamAID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'Dragon' AND Objectives.TeamID = Game.TeamAID
+) AS Dragon , (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamAID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'Baron' AND Objectives.TeamID = Game.TeamAID
+) AS Baron ,  (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamAID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'Tower' AND Objectives.TeamID = Game.TeamAID
+) AS Tower ,  (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamAID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'Inhibitor' AND Objectives.TeamID = Game.TeamAID
+) AS Inhibitor ,  (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamAID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'First Blood' AND Objectives.TeamID = Game.TeamAID
+) AS FirstBlood
+) UNION ALL (
+SELECT (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamBID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'Dragon' AND Objectives.TeamID = Game.TeamBID
+) AS Dragon , (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamBID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'Baron' AND Objectives.TeamID = Game.TeamBID
+) AS Baron ,  (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamBID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'Tower' AND Objectives.TeamID = Game.TeamBID
+) AS Tower ,  (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamBID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'Inhibitor' AND Objectives.TeamID = Game.TeamBID
+) AS Inhibitor ,  (
+SELECT COUNT(Objectives.Type) 
+FROM Objectives 
+JOIN Game ON Game.TeamBID = Objectives.TeamID AND Objectives.GameID = Game.GameID
+WHERE Objectives.GameID = $GameID AND Objectives.Type = 'First Blood' AND Objectives.TeamID = Game.TeamBID
+) AS FirstBlood
+)
+");
+while ($row = mysql_fetch_array($result)) {
+	$NumDragon[] = $row['Dragon'];
+	$NumBaron[] = $row['Baron'];
+	$NumTower[] = $row['Tower'];
+	$NumInhibitor[] = $row['Inhibitor'];
+	$NumFirstBlood[] = $row['FirstBlood'];
+}
+
+//Get Pick Order
+$result = mysql_query("
+	SELECT JointChampionName
+	FROM Champion
+	JOIN PickOrder ON PickOrder.ChampionID = Champion.ChampionID
+	WHERE PickOrder.GameID = $GameID
 	");
-	while ($row = mysql_fetch_array($result)) {
-		$TowerHealth[] = $row['TowerHealth'];
-	}
+while ($row = mysql_fetch_array($result)) {
+	$ChampionPick[] = $row['JointChampionName'];
+}
+
 
 //Convert GameTime to seconds for further use
+//note: $GameLength is a string in the format of MM:SS
 $LengthSec = (((int)(substr($GameLength[0], 0, 2)) * 60) + (int)substr($GameLength[0], 3, 4));
 
-	
+//Combine arrays from queries
+$PlayerID = array_merge($b_PlayerID, $r_PlayerID);
+$ScreenName = array_merge($b_ScreenName, $r_ScreenName);
+$PlayerName = array_merge($b_PlayerName, $r_PlayerName);
+$JointPlayerName = array_merge($b_JointPlayerName, $r_JointPlayerName);
+$ChampionName = array_merge($b_ChampionName, $r_ChampionName);
+$JointChampionName = array_merge($b_JointChampionName, $r_JointChampionName);
+$SummonerA = array_merge($b_SummonerA, $r_SummonerA);
+$SummonerB = array_merge($b_SummonerB, $r_SummonerB);
+$Level = array_merge($b_Level, $r_Level);
+$Kills = array_merge($b_Kills, $r_Kills);
+$Deaths = array_merge($b_Deaths, $r_Deaths);
+$Assists = array_merge($b_Assists, $r_Assists);
+$CreepScore = array_merge($b_CreepScore, $r_CreepScore);
+$Gold = array_merge($b_Gold, $r_Gold);
+$TeamName = array_merge($b_TeamName, $r_TeamName);
+$TeamJointName = array_merge($b_TeamJointName, $r_TeamJointName);
+$TeamCall = array_merge($b_TeamCall, $r_TeamCall); 
 ?>
 
 <title><?php echo $TeamCall[0]?> vs. <?php echo $TeamCall[5]?></title>
@@ -191,449 +427,489 @@ $LengthSec = (((int)(substr($GameLength[0], 0, 2)) * 60) + (int)substr($GameLeng
   </div>
   
   <div id="mid">
-  	<div id="TeamTopPic"><img src="../Pictures/<?php echo $TeamCall[0]?>_Team.jpg" width="473" height="164" /> <img src="../Pictures/<?php echo $TeamCall[5]?>_Team.jpg" width="473" height="164" />
-      <div id="TeamsTop"><img src="../TeamLogos/<?php echo $TeamCall[0]?>.png" width="134" height="134" /><img src="../Images/Versus.png" width="80" height="80" /><img src="../TeamLogos/<?php echo $TeamCall[5]?>.png" width="134" height="134" />
-      </div>
-      <div id="BlueTeam"><?php echo $TeamName[0]?> 
-      </div>
-      <div id="RedTeam"><?php echo $TeamName[5]?> 
-      </div>
-    </div>
-
-    <div id="tabs">
-      <ul>
-        <li><a href="#tabs-1">Scoreboard</a></li>
-        <li><a href="#tabs-2">Picks</a></li>
-        <li><a href="#tabs-3">Map</a></li>
-        <li><a href="#tabs-4">VOD</a></li>
-      </ul>
-      <div id="tabs-1">
-        <div class="datagrid">
-        	<table><thead><tr><th style = "width: 567px; text-align: center;">Game Stats</th><th style = "width: 320px; text-align: center;">Season Stats</th></tr></thead></table>
-          <table>
-          <thead>
-          <tr>
-          <th style = "width:22px"></th>
-          <th style = "width:100px; text-align: center;"> Player</th>
-          <th style = "width:44px; text-align: center;">S</th>
-          <th style = "width:20px; text-align: center;"> K</th>
-          <th style = "width:20px; text-align: center;"> D</th>
-          <th style = "width:20px; text-align: center;"> A</th>
-          <th style = "width:30px; text-align: center;"> KDA</th>
-          <th style = "width:30px; text-align: center;"> KP</th>
-          <th style = "width:20px; text-align: center;"> L</th>
-          <th style = "width:25px; text-align: center;"> CS</th>
-          <th style = "width:40px; text-align: center;"> G</th>
-          <th style = "width:40px; text-align: center;"> GPM</th>
-          <th style = "width:120px; text-align: center;"> Items</th>
-          <th style = "width:5px"></th>
-          <th style = "width:30px; text-align: center;"> TK</th>
-          <th style = "width:30px; text-align: center;"> TD</th>
-          <th style = "width:30px; text-align: center;"> TA</th>
-          <th style = "width:30px; text-align: center;"> KDA</th>
-          <th style = "width:20px; text-align: center;"> KPG</th>
-          <th style = "width:20px; text-align: center;"> DPG</th>
-          <th style = "width:20px; text-align: center;"> APG</th>
-          <th style = "width:25px; text-align: center;"> ACS</th>
-          <th style = "width:40px; text-align: center;"> AG</th>
-          <th style = "width:40px; text-align: center;"> AGPM</th>
-          </tr>
-          </thead>
-          <tbody>
-          
-          <tr>
-          <?php DisplayTablePlayer(0) ?>
-          </tr>
-          
-          <tr class="alt">
-          <?php DisplayTablePlayer(1) ?>
-          </tr>
-          
-          <tr>
-          <?php DisplayTablePlayer(2) ?>
-          </tr>
-          
-          <tr class="alt">
-          <?php DisplayTablePlayer(3) ?>
-          </tr>
-          
-          <tr>
-          <?php DisplayTablePlayer(4) ?>
-          </tr>
-          
-          </tbody>
-          </table>
-          </div>
-          </br>
-          <div class="datagrid">
-					<table>
-          <thead>
-          <tr>
-          <th style = "width:22px"></th>
-          <th style = "width:100px; text-align: center;"> Player</th>
-          <th style = "width:44px; text-align: center;">S</th>
-          <th style = "width:20px; text-align: center;"> K</th>
-          <th style = "width:20px; text-align: center;"> D</th>
-          <th style = "width:20px; text-align: center;"> A</th>
-          <th style = "width:30px; text-align: center;"> KDA</th>
-          <th style = "width:30px; text-align: center;"> KP</th>
-          <th style = "width:20px; text-align: center;"> L</th>
-          <th style = "width:25px; text-align: center;"> CS</th>
-          <th style = "width:40px; text-align: center;"> G</th>
-          <th style = "width:40px; text-align: center;"> GPM</th>
-          <th style = "width:120px; text-align: center;"> Items</th>
-          <th style = "width:5px"></th>
-          <th style = "width:30px; text-align: center;"> TK</th>
-          <th style = "width:30px; text-align: center;"> TD</th>
-          <th style = "width:30px; text-align: center;"> TA</th>
-          <th style = "width:30px; text-align: center;"> KDA</th>
-          <th style = "width:20px; text-align: center;"> KPG</th>
-          <th style = "width:20px; text-align: center;"> DPG</th>
-          <th style = "width:20px; text-align: center;"> APG</th>
-          <th style = "width:25px; text-align: center;"> ACS</th>
-          <th style = "width:40px; text-align: center;"> AG</th>
-          <th style = "width:40px; text-align: center;"> AGPM</th>
-          </tr>
-          </thead>
-          <tbody>
-          
-          <tr>
-          <?php DisplayTablePlayer(5) ?>
-          </tr>
-          
-          <tr class="alt">
-          <?php DisplayTablePlayer(6) ?>
-          </tr>
-          
-          <tr>
-          <?php DisplayTablePlayer(7) ?>
-          </tr>
-          
-          <tr class="alt">
-          <?php DisplayTablePlayer(8) ?>
-          </tr>
-          
-          <tr>
-          <?php DisplayTablePlayer(9) ?>
-          </tr>
-          
-          </tbody>
-          </table>
-          
-          <table><thead><tr><th>
-          Legend: S:Summoners | K:Kills | D:Deaths | A:Assists | KDA: Kills and Assists to Deaths Ratio | KP:Kill Participation | L:Champion Level | CS: Creepscore | G:Gold Earned | GPM: Gold Earned per Minute | TK: Total Kills this Season | TD: Total Deaths this Season | TA: Total Assists this Season | KPG: Average Kills per Game | DPG: Average Deaths per Game | APG: Average Assists per Game | AG: Average Gold per Game | AGPM: Average Gold per Minute this Season
-        	</th></tr></thead></table>
-        </div>
-        <div id="contClear"></div>
-      </div>
-      <div id="tabs-2">
-        <div id="pickOrder">
-          <?php displayPicks($GameID);?>
-        </div>
-        <p>Player Top Picks</p>
-        <div class="PicksTable">
-        <table>
-          <tr>
-            <td width="200em">Dignitas</td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td>Kiwikid</td><td></td><td><img src="../ChampIcons/Singed.png" width="50" height="50" /></td><td><img src="../ChampIcons/Elise.png" width="50" height="50" /></td><td><img src="../ChampIcons/Renekton.png" width="50" height="50" /></td>
-          </tr>
-          <tr>
-            <td>Crumbz</td><td></td><td><img src="../ChampIcons/Nasus.png" width="50" height="50" /></td><td><img src="../ChampIcons/XinZhao.png" width="50" height="50" /></td><td><img src="../ChampIcons/Vi.png" width="50" height="50" /></td>
-          </tr>
-          <tr>
-            <td>Scarra</td><td></td><td><img src="../ChampIcons/Gragas.png" width="50" height="50" /></td><td><img src="../ChampIcons/Diana.png" width="50" height="50" /></td><td><img src="../ChampIcons/Kayle.png" width="50" height="50" /></td>
-          </tr>
-          <tr>
-            <td>Imaqtpie</td><td></td><td><img src="../ChampIcons/Draven.png" width="50" height="50" /></td><td><img src="../ChampIcons/Caitlyn.png" width="50" height="50" /></td><td><img src="../ChampIcons/Ezreal.png" width="50" height="50" /></td>
-          </tr>
-          <tr>
-            <td>Patoy</td><td></td><td><img src="../ChampIcons/Alistar.png" width="50" height="50" /></td><td><img src="../ChampIcons/Zyra.png" width="50" height="50" /></td><td><img src="../ChampIcons/Thresh.png" width="50" height="50" /></td>
-          </tr>
-        </table>
-        </div>
-        <div class="PicksTable">
-        <table>
-          <tr>
-            <td width="200em">Cloud 9 HyperX</td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td>Balls</td><td></td><td><img src="../ChampIcons/Rumble.png" width="50" height="50" /></td><td><img src="../ChampIcons/Elise.png" width="50" height="50" /></td><td><img src="../ChampIcons/Kennen.png" width="50" height="50" /></td>
-          </tr>
-          <tr>
-            <td>Meteos</td><td></td><td><img src="../ChampIcons/Nasus.png" width="50" height="50" /></td><td><img src="../ChampIcons/Zac.png" width="50" height="50" /></td><td><img src="../ChampIcons/Elise.png" width="50" height="50" /></td>
-          </tr>
-          <tr>
-            <td>Hai</td><td></td><td><img src="../ChampIcons/Zed.png" width="50" height="50" /></td><td><img src="../ChampIcons/Jayce.png" width="50" height="50" /></td><td><img src="../ChampIcons/Kennen.png" width="50" height="50" /></td>
-          </tr>
-          <tr>
-            <td>Sneaky</td><td></td><td><img src="../ChampIcons/Ashe.png" width="50" height="50" /></td><td><img src="../ChampIcons/Draven.png" width="50" height="50" /></td><td><img src="../ChampIcons/Ezreal.png" width="50" height="50" /></td>
-          </tr>
-          <tr>
-            <td>Lemonnation</td><td></td><td><img src="../ChampIcons/Zyra.png" width="50" height="50" /></td><td><img src="../ChampIcons/Thresh.png" width="50" height="50" /></td><td><img src="../ChampIcons/Sona.png" width="50" height="50" /></td>
-          </tr>
-        </table>
-        </div>
-        <div id="contClear"></div>
-      </div>
-      <div id="tabs-3">
-        
-        
-        
-        
-        
-        
-        
-        
-        <div id="minimap">
-    <!-- Blue Nexus -->
-    <div class="meter-wrap" style="top:754px; left:119px;">
-        <div class="BIicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[0]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Top Nexus Tower -->
-<div class="meter-wrap" style="top:715px; left:118px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[1]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Top Inhib -->
-<div class="meter-wrap" style="top:647px; left:97px;">
-        <div class="BIicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[2]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Top 3 -->
-<div class="meter-wrap" style="top:590px; left:92px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[3]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Top 2 -->
-<div class="meter-wrap" style="top:441px; left:118px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[4]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Top 1 -->
-<div class="meter-wrap" style="top:250px; left:85px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[5]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Top 1 -->
-<div class="meter-wrap" style="top:57px; left:196px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[6]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Top 2 -->
-<div class="meter-wrap" style="top:93px; left:443px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[7]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Top 3 -->
-<div class="meter-wrap" style="top:72px; left:578px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[8]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Top Inhib -->
-<div class="meter-wrap" style="top:71px; left:642px;">
-        <div class="RIicon">
-</div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[9]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Top Nexus Tower -->
-<div class="meter-wrap" style="top:99px; left:704px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[10]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Mid Inhib -->
-    <div class="meter-wrap" style="top:184px; left:664px;">
-        <div class="RIicon">
-</div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[11]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Mid 3 -->
-    <div class="meter-wrap" style="top:229px; left:623px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[12]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Mid 2 -->
-    <div class="meter-wrap" style="top:292px; left:550px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[13]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Mid 1 -->
-    <div class="meter-wrap" style="top:373px; left:519px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[14]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Mid 1 -->
-    <div class="meter-wrap" style="top:487px; left:343px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[15]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Mid 2 -->
-    <div class="meter-wrap" style="top:574px; left:309px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[16]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Mid 3 -->
-    <div class="meter-wrap" style="top:638px; left:242px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[17]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Mid Inhib -->
-    <div class="meter-wrap" style="top:668px; left:205px;">
-        <div class="BIicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[18]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Bot Nexus Tower-->
-    <div class="meter-wrap" style="top:764px; left:156px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[19]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Bot Inhib-->
-    <div class="meter-wrap" style="top:778px; left:219px;">
-        <div class="BIicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[20]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Bot 3-->
-    <div class="meter-wrap" style="top:778px; left:255px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[21]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Bot 2-->
-    <div class="meter-wrap" style="top:767px; left:425px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[22]; ?>%;">
-        </div>
-    </div>
-    <!-- Blue Bot 1-->
-    <div class="meter-wrap" style="top:792px; left:595px;">
-        <div class="BTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[23]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Bot 1-->
-<div class="meter-wrap" style="top:599px; left:788px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[24]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Bot 2-->
-<div class="meter-wrap" style="top:399px; left:758px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[25]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Bot 3-->
-<div class="meter-wrap" style="top:278px; left:776px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[26]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Bot Inhib-->
-<div class="meter-wrap" style="top:199px; left:770px;">
-        <div class="RIicon">
-</div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[27]; ?>%;">
-        </div>
-    </div>
-    <!-- Red Bot Nexus Turret-->
-<div class="meter-wrap" style="top:126px; left:736px;">
-        <div class="RTicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[28]; ?>%;">
-        </div>
-    </div>   
-    <!-- Red Nexus -->
-    <div class="meter-wrap" style="top:93px; left:741px;">
-        <div class="RIicon">
-        </div>
-        <div class="meter-value health" style="width:<?php echo $TowerHealth[29]; ?>%;">
-        </div>
-  </div>
-</div>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-      </div>
-      <div id="tabs-4">
-      	<iframe src="//www.youtube.com/embed/9lOUiIyHpHU" name="utube" width="896" height="503" frameborder="0" id="utube" allowfullscreen></iframe>
-      </div>
-    </div>
-       <br />
-       <br />
-
-       
-  </div>
   
+  	<div id="mid_content">
+    
+        <div class="TourneyLogo">
+        <img src="../Images/NACL.png" width="400" height="120" />
+        </div>
+        
+        <div class="TeamInfo FloatLeft">      	
+          <div class="TeamLogo">
+          <img src="../TeamLogos/<?php echo $TeamCall[0];?>.png" width="120" height="120" />
+          </div>
+          <div class="TeamWL">
+          	<div class="GameOutcome"><?php if ($BlueTeamID[0] == $Winner[0]){ echo 'Win'; } else { echo 'Loss';}?></div>
+          	<div class="TeamCall"><?php echo $TeamCall[0];?></div>
+          	<div class="WL">99W-99L</div>
+          </div>
+        </div>
+        
+        <div class="TeamInfo FloatRight">
+          <div class="TeamLogo">
+          <img src="../TeamLogos/<?php echo $TeamCall[5];?>.png" width="120" height="120" />
+          </div>
+          <div class="TeamWL">
+          	<div class="GameOutcome"><?php if ($RedTeamID[0] == $Winner[0]){ echo 'Win'; } else { echo 'Loss';}?></div>
+          	<div class="TeamCall"><?php echo $TeamCall[5];?></div>
+          	<div class="WL">99W-99L</div>
+          </div>
+        </div>
+        
+    		<div id="contClear"></div>
+    
+        <div class="yel_head">
+        	<div class="yel_a"></div>
+          <div class="yel_b">Overview</div>
+          <div class="yel_c"></div>
+        </div>
+        
+        <div class="OverviewContent">
+        	<div class="OverviewPicBox">
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[0]; ?>.jpg" width="80" height="160" /></div>
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[1]; ?>.jpg" width="80" height="160" /></div>
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[2]; ?>.jpg" width="80" height="160" /></div>
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[3]; ?>.jpg" width="80" height="160" /></div>
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[4]; ?>.jpg" width="80" height="160" /></div>
+          	<div id="contClear"></div>
+            <div class="OverviewNameBox Blue">
+            	<div class="ONBa"></div>
+            	<div class="ONBb"><?php echo $TeamName[0];?></div>
+              <div class="ONBc"></div>
+            </div>
+            <div id="contClear"></div>
+            <div class="OvreviewStatsBox">
+							<div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo Kills(0)+Kills(1)+Kills(2)+Kills(3)+Kills(4); ?>
+                </div>
+                <div class="OSBStatSub">
+                	Kills
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo Deaths(0)+Deaths(1)+Deaths(2)+Deaths(3)+Deaths(4); ?>
+                </div>
+                <div class="OSBStatSub">
+                	Deaths
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo Assists(0)+Assists(1)+Assists(2)+Assists(3)+Assists(4); ?>
+                </div>
+                <div class="OSBStatSub">
+                	Assists
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo (Gold(0)+Gold(1)+Gold(2)+Gold(3)+Gold(4)).'K'; ?>
+                </div>
+                <div class="OSBStatSub">
+                	Gold
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo $NumTower[0] ?>
+                </div>
+                <div class="OSBStatSub">
+                	Towers
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo $NumInhibitor[0] ?>
+                </div>
+                <div class="OSBStatSub">
+                	Inhibitors
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo $NumDragon[0] ?>
+                </div>
+                <div class="OSBStatSub">
+                	Dragons
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo $NumBaron[0] ?>
+                </div>
+                <div class="OSBStatSub">
+                	Barons
+                </div>
+              </div>
+              <?php	echoWinFB(1)?>
+            </div>
+          </div>
+        </div>
+        
+        
+        
+              
+        <div class="VS">
+          <img src="../Images/Versus.png" width="100" height="100" />
+        </div>
+        
+        
+        <div class="OverviewContent">
+        	<div class="OverviewPicBox">
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[5]; ?>.jpg" width="80" height="160" /></div>
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[6]; ?>.jpg" width="80" height="160" /></div>
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[7]; ?>.jpg" width="80" height="160" /></div>
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[8]; ?>.jpg" width="80" height="160" /></div>
+          	<div class="OverviewPlayer"><img src="../Pictures/Players/<?php echo $JointPlayerName[9]; ?>.jpg" width="80" height="160" /></div>
+          	<div id="contClear"></div>
+            <div class="OverviewNameBox Red">
+            	<div class="ONBa"></div>
+            	<div class="ONBb"><?php echo $TeamName[5];?></div>
+              <div class="ONBc"></div>
+            </div>
+            <div id="contClear"></div>
+            <div class="OvreviewStatsBox">
+							<div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo Kills(5)+Kills(6)+Kills(7)+Kills(8)+Kills(9); ?>
+                </div>
+                <div class="OSBStatSub">
+                	Kills
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo Deaths(5)+Deaths(6)+Deaths(7)+Deaths(8)+Deaths(9); ?>
+                </div>
+                <div class="OSBStatSub">
+                	Deaths
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo Assists(5)+Assists(6)+Assists(7)+Assists(8)+Assists(9); ?>
+                </div>
+                <div class="OSBStatSub">
+                	Assists
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo (Gold(5)+Gold(6)+Gold(7)+Gold(8)+Gold(9)).'K'; ?>
+                </div>
+                <div class="OSBStatSub">
+                	Gold
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo $NumTower[1] ?>
+                </div>
+                <div class="OSBStatSub">
+                	Towers
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo $NumInhibitor[1] ?>
+                </div>
+                <div class="OSBStatSub">
+                	Inhibitors
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo $NumDragon[1] ?>
+                </div>
+                <div class="OSBStatSub">
+                	Dragons
+                </div>
+              </div>
+              <div class="OSBStat">
+              	<div class="OSBStatNum">
+                	<?php echo $NumBaron[1] ?>
+                </div>
+                <div class="OSBStatSub">
+                	Barons
+                </div>
+              </div>
+              <?php	echoWinFB(2)?>
+            </div>
+          </div>
+        </div>
+        
+        
+        
+        <div id="contClear"></div>
+                
+        <div class="yel_head">
+        	<div class="yel_a"></div>
+          <div class="yel_b">Scoreboard</div>
+          <div class="yel_c"></div>
+        </div>
+        
+        <div class="TableContent">
+        	<div class="TableTeamCall FloatLeft"><div class="rotate Blue TableTeamCallText"><?php echo $TeamCall[0]; ?></div></div>
+          <div class="datagrid">
+          <table><thead><tr><th style = "width: 566px; text-align: center;">Game Stats</th><th style = "width: 220px; text-align: center;">Season Stats</th></tr></thead></table>
+            <table>
+            <?php DisplayTableHeader() ?>
+            <tbody>          
+            <tr>						<?php DisplayTablePlayer(0) ?></tr>          
+            <tr class="alt"><?php DisplayTablePlayer(1) ?></tr>
+            <tr>						<?php DisplayTablePlayer(2) ?></tr>
+            <tr class="alt"><?php DisplayTablePlayer(3) ?></tr>          
+            <tr>						<?php DisplayTablePlayer(4) ?></tr> 
+            <tr class="alt"><?php DisplayTableTeam(1) ?></tr>         
+            </tbody>
+            </table>
+          </div>
+          <div class="TableTeamCall FloatLeft"><div class="rotate Red TableTeamCallText"><?php echo $TeamCall[5]; ?></div></div>
+          <div class="datagrid">          
+            <table>
+            <?php DisplayTableHeader() ?>
+            <tbody>          
+            <tr>         	  <?php DisplayTablePlayer(5) ?></tr>          
+            <tr class="alt"><?php DisplayTablePlayer(6) ?></tr>          
+            <tr>            <?php DisplayTablePlayer(7) ?></tr>          
+            <tr class="alt"><?php DisplayTablePlayer(8) ?></tr>          
+            <tr>            <?php DisplayTablePlayer(9) ?></tr>
+            <tr class="alt"><?php DisplayTableTeam(2) ?></tr>
+            </tbody>
+            </table>          
+            
+          </div>
+          
+          <div id="contClear"></div>
+        </div>
+        <div class="yel_head">
+          <div class="yel_a"></div>
+          <div class="yel_b">Picks & Bans</div>
+          <div class="yel_c"></div>
+        </div>        
+
+        <div id="Picks">
+        	<div id="POBox">
+          	<div id="POTeams">
+            	<div id="POTeamsBlank"></div>
+              <div class="POTeamBox">
+              	<div class="rotate Blue POTeamText"><?php echo $TeamCall[0]; ?></div>
+              </div>
+              <div class="POTeamBox">
+              	<div class="rotate Red POTeamText"><?php echo $TeamCall[5]; ?></div>
+              </div> 
+            </div>
+            <div id="POBans">
+            	<div id="POBanTag">
+              	<div class="PickLabel">
+                	<div class="PLa"></div>
+                  <div class="PLb"> &nbsp&nbsp Bans &nbsp&nbsp </div>
+                  <div class="PLc"></div>
+                </div>             	
+              </div>
+              <div id="POBanTable">
+              	<div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[0] ?>.png');">
+                <img src="../Images/banned.png" width="49" height="49" /></div>
+                <div class="POIcon" style="background-image:url('../Images/ArrowThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[2] ?>.png');">
+                <img src="../Images/banned.png" width="49" height="49" /></div>
+                <div class="POIcon" style="background-image:url('../Images/ArrowThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[4] ?>.png');">
+                <img src="../Images/banned.png" width="49" height="49" /></div>
+                <div class="POIcon" >
+                </div>
+                <div class="POIcon" >
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[1] ?>.png');">
+                <img src="../Images/banned.png" width="49" height="49" /></div>
+                <div class="POIcon" style="background-image:url('../Images/ArrowThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[3] ?>.png');">
+                <img src="../Images/banned.png" width="49" height="49" /></div>
+                <div class="POIcon" style="background-image:url('../Images/ArrowThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[5] ?>.png');">
+                <img src="../Images/banned.png" width="49" height="49" /></div>
+              </div>
+            </div>
+            <div id="POPicks">
+            	<div id="POPickTag">
+              	<div class="PickLabel">
+                	<div class="PLa"></div>
+                  <div class="PLb"> &nbsp&nbsp Picks &nbsp&nbsp </div>
+                  <div class="PLc"></div>
+                </div>
+              </div>
+              <div id="POPickTable">
+              	<div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[6] ?>.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../Images/LineThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../Images/ArrowThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[9] ?>.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[10] ?>.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../Images/LineThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../Images/ArrowThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[13] ?>.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[14] ?>.png');">
+                </div>
+                <div class="POIcon" >
+                </div>
+                <div class="POIcon" >
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[7] ?>.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[8] ?>.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../Images/LineThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../Images/ArrowThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[11] ?>.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[12] ?>.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../Images/LineThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../Images/ArrowThrough.png');">
+                </div>
+                <div class="POIcon" style="background-image:url('../ChampIcons/<?php echo $ChampionPick[15] ?>.png');">
+                </div>
+
+              </div>
+            </div>
+          </div>
+          
+          <div id="contClear"></div>
+          
+          <div id="CommonContainer">
+          	<div id="ComLabel">
+         				<div class="PickLabel">
+                	<div class="PLa"></div>
+                  <div class="PLb"> &nbsp&nbsp Player Top Picks &nbsp&nbsp </div>
+                  <div class="PLc"></div>
+                </div>
+            </div>
+                <div id="contClear"></div>
+          	<div class="ComTeam">
+            	<?php echoTopPicks(0);
+							echoTopPicks(1);
+							echoTopPicks(2);
+							echoTopPicks(3);
+							echoTopPicks(4); ?>              
+            </div>
+            <div class="ComTeam">
+            	<?php echoTopPicks(5);
+							echoTopPicks(6);
+							echoTopPicks(7);
+							echoTopPicks(8);
+							echoTopPicks(9); ?>
+            </div>
+          </div>
+          
+          
+        </div>
+
+        
+        <div class="yel_head">
+        	<div class="yel_a"></div>
+          <div class="yel_b">VOD</div>
+          <div class="yel_c"></div>
+        </div>        
+        
+				<div id="VOD">
+        	<?php
+						if ( (substr($VOD[0], 0, 6)) == 'No VOD'){
+							echo "No VOD available for this match.";
+						}
+						else{					
+							if ( (substr($VOD[0], 0, 1)) != '<'){
+								//Youtube VOD
+								echo '<iframe src="//www.youtube.com/embed/'.$VOD[0].'" width="855" height="480" frameborder="0" allowfullscreen></iframe>';
+							}
+							else {
+								//Twitch VOD
+								echo "<object bgcolor='#000000' data='http://www.twitch.tv/widgets/archive_embed_player.swf' height='480' id='clip_embed_player_flash' type='application/x-shockwave-flash' width='855'>".$VOD[0];
+							}
+						}
+					?>
+        	
+        </div>
+        
+      	<div id="contClear"></div>
+    
+   			 <div class="yel_head">
+        	<div class="yel_a"></div>
+          <div class="yel_b">Game Comments</div>
+          <div class="yel_c"></div>
+        </div> 
+      
+    <form action="" method="post">
+    <div id="comlist">
+    
+      <?php      
+        $result = mysql_query("
+          SELECT * FROM GComments");
+        while ($row = mysql_fetch_array($result)) {
+          $CID[] = $row['CommentID'];
+          $GID[] = $row['GameID'];
+          $USR[] = $row['User'];
+          $CMT[] = $row['Comment'];
+        }
+        $max = sizeof($CID);
+        echo "<table style=\"cell-padding:3px; font-size:small\">";
+        for ($i = 0; $i < $max; $i++){
+          echo "<tr><td style=\"text-align:right; color:#FFFAD0\">$USR[$i]</td><td style=\"color:#FFF\">-</td><td style=\"color:#FFF\">$CMT[$i]</td></tr>";
+        }
+        echo "</table>";
+      ?>
+      
+    </div>
+    <div id="cptcha">
+    
+      <?php      
+      echo recaptcha_get_html($publickey, $error);      
+      ?>
+      
+    </div> 
+    
+    <div id="submitField"><input type="submit" value="submit" /></div> 
+    <div id="userField">Username:<input type="text" size=20 maxlength=20 name="user" placeholder="username"/><br/></div>
+    <br />
+    <div id="commentField">Comment:<br /><textarea size=128 maxlength=128 cols=64 rows="4" name="comment" placeholder="comment"/></textarea></div>
+    <div id="contClear"></div>
+    </form>      
+  	</div>
+  </div>
   <div id="bot">
   Notes:
   <ul>
     <li>add popular piuck to pick section in map section </li>
     <li>add first tower predictions and tower killing speeds as well as inhibs add season totals, add kill participation create popular picks section</li>
   	<li>add tournament brackets / schedules</li>
-    <li>add insert gold module</li>
+    <li>in stats table add team totals + draons barons</li>
     <li>add player rank in player profiles</li>
     <li>fix huge list of missing rounding </li>
+    <li>Replace towers with structures</li>
+    <li>Add leaguepedia links on player profiles</li>
   </ul>
+
   </div>
   
 </div>
 </br>
+
+
 </body>
 
 </html>
@@ -656,61 +932,6 @@ function echoTopScores($Box){
 	echo "</div>\n";
 }
 
-
-function displayPicks($Game){
-
-	$result = mysql_query("
-	SELECT JointChampionName
-	FROM Champion
-	JOIN PickOrder ON PickOrder.ChampionID = Champion.ChampionID
-	WHERE PickOrder.GameID = $Game
-	");
-	while ($row = mysql_fetch_array($result)) {
-		$ChampionPick[] = $row['JointChampionName'];
-	}
-	
-	echo <<<END
-	<table cellpadding="3" cellspacing="0" >
-	<tr>
-	<td valign="top" width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[0].png" width="50" height="50" class="images" /><img src="../Images/banned.png" width="50" height="50" class="icon" /></td>
-	<td valign="top" width = "50px" height="50px"></td>
-	<td valign="top" width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[2].png" width="50" height="50" class="images" /><img src="../Images/banned.png" width="50" height="50" class="icon" /></td>
-	<td valign="top" width = "50px" height="50px"></td>
-	<td valign="top" width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[4].png" width="50" height="50" class="images" /><img src="../Images/banned.png" width="50" height="50" class="icon" /></td>
-	<td valign="top" width = "50px" height="50px"></td>
-	<td valign="top" width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[6].png" width="50" height="50" class="images" /></td>
-	<td valign="top" width = "50px" height="50px"></td>
-	<td valign="top" width = "50px" height="50px"></td>
-	<td valign="top" width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[4].png" width="50" height="50" class="images" /></td>
-	<td valign="top" width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[10].png" width="50" height="50" class="images" /></td>
-	<td valign="top" width = "50px" height="50px"></td>
-	<td valign="top" width = "50px" height="50px"></td>
-	<td valign="top" width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[13].png" width="50" height="50" class="images" /></td>
-	<td valign="top" width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[14].png" width="50" height="50" class="images" /></td>
-	</tr>
-	<tr>
-	<td valign="top"width = "50px" height="50px"></td>
-	<td valign="top"width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[1].png" width="50" height="50" class="images" /><img src="../Images/banned.png" width="50" height="50" class="icon" /></td>
-	<td valign="top"width = "50px" height="50px"></td>
-	<td valign="top"width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[3].png" width="50" height="50" class="images" /><img src="../Images/banned.png" width="50" height="50" class="icon" /></td>
-	<td valign="top"width = "50px" height="50px"></td>
-	<td valign="top"width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[5].png" width="50" height="50" class="images" /><img src="../Images/banned.png" width="50" height="50" class="icon" /></td>
-	<td valign="top"width = "50px" height="50px"></td>
-	<td valign="top"width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[7].png" width="50" height="50" class="images" /></td>
-	<td valign="top"width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[8].png" width="50" height="50" class="images" /></td>
-	<td valign="top"width = "50px" height="50px"></td>
-	<td valign="top"width = "50px" height="50px"></td>
-	<td valign="top"width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[11].png" width="50" height="50" class="images" /></td>
-	<td valign="top"width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[12].png" width="50" height="50" class="images" /></td>
-	<td valign="top"width = "50px" height="50px"></td>
-	<td valign="top"width = "50px" height="50px"></td>
-	<td valign="top"width = "50px" height="50px"><img src="../ChampIcons/$ChampionPick[15].png" width="50" height="50" class="images" /></td>
-	</tr>
-	</table>
-END;
-
-}
-
 function echoChampion($PlayerNum){
 	global $JointChampionName;	
 	echo "<img src=\"../ChampIcons/36px-".$JointChampionName[$PlayerNum]."Square.png\" width=\"20\" height=\"20\" />";
@@ -726,144 +947,334 @@ function echoSummoners($PlayerNum){
 	echo "<img src=\"../SummonerIcons/20px-".$SummonerA[$PlayerNum].".png\" width=\"20\" height=\"20\" /><img src=\"../SummonerIcons/20px-".$SummonerB[$PlayerNum].".png\" width=\"20\" height=\"20\" /></td>";
 }
 
-function echoKills($PlayerNum){
+function Kills($PlayerNum){
 	global $Kills;
-	echo $Kills[$PlayerNum];
+	return $Kills[$PlayerNum];
 }
 
-function echoDeaths($PlayerNum){
+function Deaths($PlayerNum){
 	global $Deaths;
-	echo $Deaths[$PlayerNum];
+	return $Deaths[$PlayerNum];
 }
 
-function echoAssists($PlayerNum){
+function Assists($PlayerNum){
 	global $Assists;
-	echo $Assists[$PlayerNum];
+	return $Assists[$PlayerNum];
 }
 
-function echoKDA($PlayerNum){
+function KDA($PlayerNum){
 	global $Kills, $Deaths, $Assists;
 	if ($Deaths[$PlayerNum] != 0){
-		echo round((($Kills[$PlayerNum] + $Assists[$PlayerNum])/$Deaths[$PlayerNum]), 2);
+		return round((($Kills[$PlayerNum] + $Assists[$PlayerNum])/$Deaths[$PlayerNum]), 2);
 	}
 	else{
-		echo round(($Kills[$PlayerNum] + $Assists[$PlayerNum]), 2);
+		return round(($Kills[$PlayerNum] + $Assists[$PlayerNum]), 2);
 	}
 }
 
-function echoKP($PlayerNum){
+function KP($PlayerNum){
 	global $Kills, $Deaths, $Assists;
 	if ($PlayerNum < 5){
-		echo round((float)(($Kills[$PlayerNum]+$Assists[$PlayerNum])/($Kills[0]+$Kills[1]+$Kills[2]+$Kills[3]+$Kills[4])) * 100 ) . '%';
+		return round((float)(($Kills[$PlayerNum]+$Assists[$PlayerNum])/($Kills[0]+$Kills[1]+$Kills[2]+$Kills[3]+$Kills[4])) * 100 ) . '%';
 	}
 	else{
-		echo round((float)(($Kills[$PlayerNum]+$Assists[$PlayerNum])/($Kills[5]+$Kills[6]+$Kills[7]+$Kills[8]+$Kills[9])) * 100 ) . '%';
+		return round((float)(($Kills[$PlayerNum]+$Assists[$PlayerNum])/($Kills[5]+$Kills[6]+$Kills[7]+$Kills[8]+$Kills[9])) * 100 ) . '%';
 	}
 }
 
-function echoLevel($PlayerNum){
+function Level($PlayerNum){
 	global $Level;
-	echo $Level[$PlayerNum];
+	return $Level[$PlayerNum];
 }
 
-function echoCS($PlayerNum){
+function CS($PlayerNum){
 	global $CreepScore;
-	echo $CreepScore[$PlayerNum];
+	return $CreepScore[$PlayerNum];
 }
 
-function echoItems($PlayerNum){
-	global $Item;
-	for ($i = $PlayerNum*6; $i < ($PlayerNum*6 + 6); $i++){
-		echo "<img src=\"../ItemIcons/32px-".$Item[$i].".gif\" width=\"20\" height=\"20\" />";
+function echoItems($PlaNum){
+	global  $b_Item1S, 	$b_Item1L,	$b_Item2S,	$b_Item2L,	$b_Item3S,	$b_Item3L,
+					$b_Item4S,	$b_Item4L,	$b_Item5S,	$b_Item5L,	$b_Item6S,	$b_Item6L,
+					$r_Item1S, 	$r_Item1L,	$r_Item2S,	$r_Item2L,	$r_Item3S,	$r_Item3L,
+					$r_Item4S,	$r_Item4L,	$r_Item5S,	$r_Item5L,	$r_Item6S,	$r_Item6L;
+	if ($PlaNum < 5){
+		echo "<img src=\"../ItemIcons/32px-".$b_Item1L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$b_Item2L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$b_Item3L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$b_Item4L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$b_Item5L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$b_Item6L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+	}
+	else{
+		$PlaNum = ($PlaNum - 5);
+		echo "<img src=\"../ItemIcons/32px-".$r_Item1L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$r_Item2L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$r_Item3L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$r_Item4L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$r_Item5L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
+		echo "<img src=\"../ItemIcons/32px-".$r_Item6L[$PlaNum].".gif\" width=\"20\" height=\"20\" />";
 	}
 }
 
-function echoGold($PlayerNum){
+function Gold($PlayerNum){
 	global $Gold;
 	if ( $Gold[$PlayerNum] > 999 ){
-		echo ($Gold[$PlayerNum]/1000)."K";
+		return round(($Gold[$PlayerNum]/1000), 1)."K";
 	}
 	else{
-		echo $Gold[$PlayerNum];
+		return $Gold[$PlayerNum];
 	}
 }
 
-function echoGPM($PlayerNum){
+function GPM($PlayerNum){
 	global $Gold, $LengthSec;
-	echo round(($Gold[$PlayerNum]/($LengthSec/60)), 0);
+	return round(($Gold[$PlayerNum]/($LengthSec/60)), 0);
+}
+
+function DisplayTableHeader(){
+	echo <<<END
+	<thead>
+	<tr>
+	<th style = "width:20px"></th>
+	<th style = "width:100px; text-align: center;"> Player</th>
+	<th style = "width:40px; text-align: center;">S</th>
+	<th style = "width:20px; text-align: center;"> K</th>
+	<th style = "width:20px; text-align: center;"> D</th>
+	<th style = "width:20px; text-align: center;"> A</th>
+	<th style = "width:30px; text-align: center;"> KDA</th>
+	<th style = "width:35px; text-align: center;"> KP</th>
+	<th style = "width:20px; text-align: center;"> L</th>
+	<th style = "width:25px; text-align: center;"> CS</th>
+	<th style = "width:40px; text-align: center;"> G</th>
+	<th style = "width:40px; text-align: center;"> GPM</th>
+	<th style = "width:120px; text-align: center;"> Items</th>
+	<th style = "width:20px; text-align: center;"> KPG</th>
+	<th style = "width:20px; text-align: center;"> DPG</th>
+	<th style = "width:20px; text-align: center;"> APG</th>
+	<th style = "width:35px; text-align: center;"> KDA</th>
+	<th style = "width:25px; text-align: center;"> ACS</th>
+	<th style = "width:40px; text-align: center;"> AG</th>
+	<th style = "width:40px; text-align: center;"> AGPM</th>
+	</tr>
+	</thead>
+END;
 }
 
 function DisplayTablePlayer($PNum){
 	echo "<td>";
 	echoChampion($PNum);
-	echo "</td>";
+	echo "</td>\n";
 	echo "<td>";
 	echoPlayer($PNum);
-	echo "</td>";
+	echo "</td>\n";
 	echo "<td>";
 	echoSummoners($PNum);
-	echo "</td>";
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoKills($PNum);
-	echo "</td>";
+	echo Kills($PNum);
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoDeaths($PNum);
-	echo "</td>";
+	echo Deaths($PNum);
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoAssists($PNum);
-	echo "</td>";
+	echo Assists($PNum);
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoKDA($PNum);
-	echo "</td>";
+	echo KDA($PNum);
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoKP($PNum);
-	echo "</td>";
+	echo KP($PNum);
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoLevel($PNum);
-	echo "</td>";
+	echo Level($PNum);
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoCS($PNum);
-	echo "</td>";
+	echo CS($PNum);
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoGold($PNum); //Game Gold
-	echo "</td>";
+	echo Gold($PNum); //Game Gold
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoGPM($PNum); //GPM
-	echo "</td>";
+	echo GPM($PNum); //GPM
+	echo "</td>\n";
 	echo "<td>";
 	echoItems($PNum);//6 items
-	echo "</td>";
-	echo "<td>";//Blank spot after Items
-	echo "</td>";//^^^^^^^^^^^^^
-  echo "<td style = \"text-align: center;\">";
-	echoKills($PNum);//Total Season Kills
-	echo "</td>";
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoDeaths($PNum);//Total Season Deaths
-	echo "</td>";
+	echo Kills($PNum);//Season Kill Per Game Average
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoAssists($PNum);//Total Season Assists
-	echo "</td>";
+	echo Deaths($PNum);//Season Deaths per Game Average
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoKDA($PNum);//Season KDA
-	echo "</td>";
+	echo Assists($PNum);//Season Assists per Game Average
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoKills($PNum);//Season Kill Per Game Average
-	echo "</td>";
+	echo KDA($PNum);//Season KDA
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoDeaths($PNum);//Season Deaths per Game Average
-	echo "</td>";
+	echo CS($PNum); //Season Average CS per Game
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoAssists($PNum);//Season Assists per Game Average
-	echo "</td>";
+	echo Gold($PNum); //Season Average gold per game
+	echo "</td>\n";
 	echo "<td style = \"text-align: center;\">";
-	echoCS($PNum); //Season Average CS per Game
-	echo "</td>";
-	echo "<td style = \"text-align: center;\">";
-	echo "*"; //Season Average gold per game
-	echo "</td>";
-	echo "<td style = \"text-align: center;\">";
-	echo "*"; //Season Gold per Minute
-	echo "</td>";
+	echo GPM($PNum); //Season Gold per Minute
+	echo "</td>\n";
 }
+
+//Display Team Totals in the stats table
+function DisplayTableTeam($TeamNum){	
+	if ( $TeamNum == 1 ){
+		$PID = array(0,1,2,3,4);
+	}
+	else{
+		$PID = array(5,6,7,8,9);
+	}
+	global $TeamCall;
+	echo "<td>";
+	echo '<img src="../TeamLogos/'.$TeamCall[$PID[0]].'.png" width="20" height="20" />';
+	echo "</td>\n";
+	echo "<td>";
+	echo "Team Totals:";
+	echo "</td>\n";
+	echo "<td>";
+	//No Summoners
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo Kills($PID[0])+Kills($PID[1])+Kills($PID[2])+Kills($PID[3])+Kills($PID[4]);
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo Deaths($PID[0])+Deaths($PID[1])+Deaths($PID[2])+Deaths($PID[3])+Deaths($PID[4]);
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo Assists($PID[0])+Assists($PID[1])+Assists($PID[2])+Assists($PID[3])+Assists($PID[4]);
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo (KDA($PID[0])+KDA($PID[1])+KDA($PID[2])+KDA($PID[3])+KDA($PID[4]))/5;
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	// NO KP
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	//No Levels maybe average level eventually
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo CS($PID[0])+CS($PID[1])+CS($PID[2])+CS($PID[3])+CS($PID[4]);
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo (Gold($PID[0])+Gold($PID[1])+Gold($PID[2])+Gold($PID[3])+Gold($PID[4])).'K'; //Game Gold
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo GPM($PID[0])+GPM($PID[1])+GPM($PID[2])+GPM($PID[3])+GPM($PID[4])+GPM($PID[5]); //GPM
+	echo "</td>\n";
+	echo "<td>";
+	//no items
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo Kills($PNum);//Season Kill Per Game Average
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo Deaths($PNum);//Season Deaths per Game Average
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo Assists($PNum);//Season Assists per Game Average
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo KDA($PNum);//Season KDA
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo CS($PNum); //Season Average CS per Game
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo Gold($PNum); //Season Average gold per game
+	echo "</td>\n";
+	echo "<td style = \"text-align: center;\">";
+	echo GPM($PNum); //Season Gold per Minute
+	echo "</td>\n";
+}
+
+function TopPicks($teamnum){ //finish after making a functioning mysql query to obtain results
+	global $TeamName;
+	echo '<p>Player Top Picks</p>';
+	echo '<div class="PicksTable">';
+	echo '<table><tr><td width="200em">';
+	
+}
+
+function echoOverview(){
+	//insert team a vs team b with logos <br/> team records / winner / top performers (K/A/G/CS) / torunament / standings? tower score dragons barons
+	
+}
+
+function echoObjectives(){
+	global $NumDragon, $NumBaron, $NumTower, $NumFirstBlood;
+	echo "Dragons $NumDragon[0] Barons $NumBaron[0] Towers $NumTower[0] First Blood $NumFirstBlood[0]<br/>";
+	echo "Dragons $NumDragon[1] Barons $NumBaron[1] Towers $NumTower[1] First Blood $NumFirstBlood[1]";
+
+}
+
+function echoWinFB($TeamNum){
+	global $BlueTeamID, $RedTeamID, $Winner, $GameLength, $FBTeam, $FBTime;
+	if ($TeamNum == 1){
+		//Execute code bor blue team
+		if ($BlueTeamID[0] == $FBTeam[0]){		
+			//Blue Team got FB
+			echo '<div class="OSBaddon">First Blood in '.$FBTime[0].'</div>';
+		}
+		if ($BlueTeamID[0] == $Winner[0]){
+			//Blue Team WON
+			echo '<div class="OSBaddon">Victory in '.$GameLength[0].'</div>';
+		}
+	}
+	else{
+		//Execute code bor blue team
+		if ($RedTeamID[0] == $FBTeam[0]){		
+			//Blue Team got FB
+			echo '<div class="OSBaddon">First Blood in '.$FBTime[0].'</div>';
+		}
+		if ($RedTeamID[0] == $Winner[0]){
+			//Blue Team WON
+			echo '<div class="OSBaddon">Victory in '.$GameLength[0].'</div>';
+		}
+	}
+}
+
+function echoTopPicks($PID){
+	global $ScreenName, $TeamCall;	
+	
+	echo '<div class="ComTeamID">';
+	if ( $PID == 1){
+		echo '<div class="rotate Blue POTeamText">'.$TeamCall[$PID].'</div>';
+	}
+	if ( $PID == 6 ){
+		echo '<div class="rotate Red POTeamText">'.$TeamCall[$PID].'</div>';
+	}
+	echo <<<END
+		</div>
+		<div class="ComPlayer">
+			$ScreenName[$PID]
+		</div>
+		<div class="ComChampPool">
+			<div class="ComChamp">
+				<img src="../ChampIcons/Ahri.png" />
+				<div class="ComChampText">56%</div>
+			</div>
+			<div class="ComChamp">
+				<img src="../ChampIcons/Akali.png" />
+				<div class="ComChampText">23%</div>
+			</div>
+			<div class="ComChamp">
+				<img src="../ChampIcons/Alistar.png" />
+				<div class="ComChampText">10%</div>
+			</div>
+		</div>
+		<div id="contClear"></div>
+END;
+}
+
+
+
 ?>
+
+

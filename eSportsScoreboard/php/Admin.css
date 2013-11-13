@@ -92,7 +92,7 @@ fieldset label input {
 	background: white;
 	border: 1px solid #d0d2d5;
 	border-bottom: 1px solid #bebfc2;
-	border-radius: 4px;
+	border-radius: 8px;
 	margin: 0 0 20px 0;
 	padding: 20px;
 	width: 1350px;
@@ -114,6 +114,19 @@ fieldset label input {
 	padding-bottom: 2px;
 	padding-left: 5px;
 	width: 200px;
+}
+
+.quickEscape {
+	position: relative;
+	top: 40px;
+	border: 1px solid #d0d2d5;
+	border-bottom: 1px solid #bebfc2;
+	padding-top: 2px;
+	padding-right: 0px;
+	padding-bottom: 2px;
+	padding-left: 5px;
+	width: 200px;
+	background-color: #FFF;
 }
 
 #MapBackground {
@@ -149,4 +162,36 @@ input[type='range'] {
 	padding-right: 5px;
 	padding-bottom: 5px;
 	padding-left: 5px;
+}
+
+.FloatBox {
+	position:relative;
+	float:left;
+}
+
+.KDA{
+	width:420px !important; 
+	height:190px !important; 
+}
+
+.AP{
+	width:322px !important; 
+}
+
+#contClear {
+	clear: both;
+	position: relative;
+}
+
+table .alt td {
+	background: #e4ffe1;
+	color: #000000;
+}
+
+.PlayerPicture {
+	height:260px;
+	width:100px;
+	float:left;
+	font-size: x-small;
+	margin-left: 3px;
 }

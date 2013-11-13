@@ -41,9 +41,11 @@ if(!$statePostError){
     	<input type="hidden" name="GameID" value="<?php echo $GameID;?>" />
 			<input type="submit" style="width:160px" />
     </form>
-    <form method="post" action="AdminPanel.php">
-      <input type="submit" value="Admin Panel" style="width:160px"/>
-  	</form>
+      <div class="quickEscape">
+        <form method="post" action="AdminPanel.php">
+          <input type="submit" value="Admin Panel" style="width:193px"/>
+        </form>
+      </div>
     </div>
 </body>
 </html>

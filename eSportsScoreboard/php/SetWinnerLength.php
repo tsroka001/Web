@@ -54,8 +54,7 @@ while ($row = mysql_fetch_array($result)) {
     <div class="caption">
       <strong>Winner/Length Update</strong>
     </div>
-    <form method="post" action="SetWinnerLength.php">
-    
+    <form method="post" action="SetWinnerLength.php">    
     <table>
     <tr>
     <td>Winner</td>
@@ -70,15 +69,18 @@ while ($row = mysql_fetch_array($result)) {
     <td><input name="Length" value="<?php echo $Length;?>"/></td>
     </tr>
     <tr><input type="hidden" name="GameID" value="<?php echo $GameID;?>" />
+    <td>
+    </td>
     <td><input type="submit" value="Submit" style="width:160px"/>
     </td></form>
-    <td><form method="post" action="AdminPanel.php">
-  				<input type="submit" value="Admin Panel" style="width:160px"/>
-				</form>
-    </td>
     </tr>
-    </table>
-            
+    </table>  
+    
+     <div class="quickEscape">
+      <form method="post" action="AdminPanel.php">
+        <input type="submit" value="Admin Panel" style="width:193px"/>
+      </form>
+    </div>        
 	</div>
 </body>
 </html>

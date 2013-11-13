@@ -26,6 +26,8 @@ $myInsQuery = "DELETE FROM `LoLStatsTest2`.`Assists` WHERE `GameID`='$GameID';";
 $result = mysql_query($myInsQuery);
 $myInsQuery = "DELETE FROM `LoLStatsTest2`.`Plays` WHERE `GameID`='$GameID';";
 $result = mysql_query($myInsQuery);
+$myInsQuery = "DELETE FROM `LoLStatsTest2`.`Objectives` WHERE `GameID`='$GameID';";
+$result = mysql_query($myInsQuery);
 ?>
 </head>
 

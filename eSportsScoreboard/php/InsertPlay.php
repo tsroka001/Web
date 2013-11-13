@@ -71,7 +71,7 @@ if(!($senderror)) {
   $max = sizeof($AssistID);
   for($val = 0; $val< $max; $val++){
     mysql_query("UPDATE `LoLStatsTest2`.`Player` SET `Assists`=$Assists[$val] WHERE `GameID`='$GameID' and`PlayerID`='$AssistID[$val]';");
-	mysql_query("INSERT INTO `LoLStatsTest2`.`Assits` (`GameID`, `PlayID`, `PlayerID`) VALUES ($GameID, '$PlayID', '$AssistID[$val]');");
+		mysql_query("INSERT INTO `LoLStatsTest2`.`Assits` (`GameID`, `PlayID`, `PlayerID`) VALUES ($GameID, '$PlayID', '$AssistID[$val]');");
   }
   
   //Update Plays Table

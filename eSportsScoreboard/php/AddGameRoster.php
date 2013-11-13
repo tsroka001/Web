@@ -45,22 +45,18 @@ mysql_connect($hostname, $username, $password) OR DIE ("Unable to connect to dat
 mysql_select_db($dbname);
 
 //SQL Queries
-$result = mysql_query("SELECT PlayerID FROM PlayerInfo WHERE TeamID = $BlueTeamID");
+$result = mysql_query("SELECT PlayerID, ScreenName, Role FROM PlayerInfo WHERE TeamID = $BlueTeamID ORDER BY Role ASC");
 while ($row = mysql_fetch_array($result)) {
 	$BlueID[] = $row['PlayerID'];
-}
-$result = mysql_query("SELECT ScreenName FROM PlayerInfo WHERE TeamID = $BlueTeamID");
-while ($row = mysql_fetch_array($result)) {
 	$BlueSN[] = $row['ScreenName'];
 }
-$result = mysql_query("SELECT PlayerID FROM PlayerInfo WHERE TeamID = $RedTeamID");
+
+$result = mysql_query("SELECT PlayerID, ScreenName, Role FROM PlayerInfo WHERE TeamID = $RedTeamID ORDER BY Role ASC");
 while ($row = mysql_fetch_array($result)) {
 	$RedID[] = $row['PlayerID'];
-}
-$result = mysql_query("SELECT ScreenName FROM PlayerInfo WHERE TeamID = $RedTeamID");
-while ($row = mysql_fetch_array($result)) {
 	$RedSN[] = $row['ScreenName'];
 }
+
 
 //SQL Inserts
 $myInsQuery = "INSERT INTO `LoLStatsTest2`.`Game` (`GameID`, `TeamAID`, `TeamBID`, `GameState`, `GameDate`, `GameTime`, `Season`, `Tournament`, `BestOfGame`, `Winner`, `GameLength`) VALUES ($GameID, '$BlueTeamID', '$RedTeamID', '1', '$date', '$time', '$season', '$tournament', '$seriesgame', '0', '00:00');";
